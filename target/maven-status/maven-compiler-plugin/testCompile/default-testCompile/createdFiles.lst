@@ -1,0 +1,8 @@
+someone_else/TF_IDF_Demo.class
+partition_test/pPartitioner.class
+someone_else/mrTests.class
+someone_else/columnTest.class
+partition_test/pDriver.class
+someone_else/UtilTests.class
+partition_test/pMapper.class
+partition_test/pReducer.class
