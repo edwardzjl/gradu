@@ -1,4 +1,4 @@
-package document_clustering.similarity;
+package document_clustering.deprecated.similarity_trick;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -30,8 +30,9 @@ public class ISimMapper extends Mapper<Text, Text, Text, Text> {
 //
 //        double sim = Double.valueOf(w1w2[0]) * Double.valueOf(w1w2[1]);
 //
+//
 //        this.outputValue.set(content[0] + ":" + sim);
-////         src,dest \t term:sim
+        // src,dest \t term:sim
 //        context.write(key, this.outputValue);
         context.write(key, value);
     }

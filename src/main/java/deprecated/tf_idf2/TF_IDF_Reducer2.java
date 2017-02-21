@@ -1,4 +1,4 @@
-package document_clustering.tf_idf;
+package deprecated.tf_idf2;
 
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Created by edwardlol on 2016/12/3.
  */
-public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
+public class TF_IDF_Reducer2 extends Reducer<Text, Text, Text, DoubleWritable> {
     //~ Instance fields --------------------------------------------------------
 
     private int documentNumber;
@@ -43,6 +43,7 @@ public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
     }
 
     /**
+     *
      * @param key     term
      * @param values  id@@g_no@@line_no=weight
      * @param context
@@ -59,22 +60,27 @@ public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
 
         for (Text value : values) {
             // docAndFreq[0] = id@@g_no@@line_no
-            // docAndFreq[1] = weight
+            // docAndFreq[1] = weight / sumOfWordsInDocument
             String[] docAndFreq = value.toString().split("=");
             appearInAll++;
             this.termFrequencies.put(docAndFreq[0], docAndFreq[1]);
         }
 
         for (Map.Entry<String, String> entry : termFrequencies.entrySet()) {
+//            String[] termFreqAndTotalWords = entry.getValue().split("/");
+
+//            double tf = Double.valueOf(termFreqAndTotalWords[0])
+//                    / Double.valueOf(termFreqAndTotalWords[1]);
 
             double tf = Double.valueOf(entry.getValue());
 
             double idf = Math.log((double) this.documentNumber
                     / (double) (appearInAll + 1));
 
+
             this.outputKey.set(key + "@@@" + entry.getKey());
             this.outputValue.set(tf * idf);
-            // term@@@id@@g_no@@line_no \t tf-idf
+            // term@@@id@@g_no@@line_no \t tf*idf
             context.write(this.outputKey, this.outputValue);
         }
     }

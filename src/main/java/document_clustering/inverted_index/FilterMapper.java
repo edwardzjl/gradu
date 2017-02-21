@@ -1,5 +1,6 @@
 package document_clustering.inverted_index;
 
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -10,18 +11,18 @@ import java.io.IOException;
  * <p>
  * Created by edwardlol on 2016/11/24.
  */
-public class InvertedIndexMapper extends Mapper<Text, Text, Text, Text> {
+public class FilterMapper extends Mapper<Text, Text, IntWritable, Text> {
     //~  Instance fields -------------------------------------------------------
 
-    private Text outputKey = new Text();
+    private IntWritable outputKey = new IntWritable();
 
     private Text outputValue = new Text();
 
     //~  Methods ---------------------------------------------------------------
 
     /**
-     * @param key     term@@@entry_id@@g_no@@line_no
-     * @param value   tf-idf
+     * @param key     term
+     * @param value   line_no=tf-idf,...
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -30,16 +31,11 @@ public class InvertedIndexMapper extends Mapper<Text, Text, Text, Text> {
     public void map(Text key, Text value, Context context)
             throws IOException, InterruptedException {
 
-        String[] termAndId = key.toString().split("@@@");
-        String term = termAndId[0];
-        String id = termAndId[1];
-        String tf_idf = value.toString();
+        int cnt = value.toString().split(",").length;
 
-        String[] id_array = id.split("@@");
-
-        this.outputKey.set(term);
-        this.outputValue.set(id_array[2] + "=" + tf_idf);
-        // term \t line_no=tf-idf
+        this.outputKey.set(cnt);
+        this.outputValue.set(key.toString() + "@@" + value.toString());
+        // cnt \t term@@line_no=tf-idf,...
         context.write(this.outputKey, this.outputValue);
     }
 }

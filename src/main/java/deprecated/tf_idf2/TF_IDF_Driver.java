@@ -1,4 +1,4 @@
-package document_clustering.tf_idf;
+package deprecated.tf_idf2;
 
 import document_clustering.util.LineCountMapper;
 import document_clustering.util.LineCountReducer;
@@ -30,15 +30,16 @@ public class TF_IDF_Driver extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         if (args.length < 2) {
             System.err.printf("usage: %s simhash_result_dir output_dir " +
-                            "[gname_weight] [compress_or_not]\n",
+                            "[gname_weight] [docCnt_output_dir]\n",
                     getClass().getSimpleName());
             System.exit(1);
         }
 
-        Path docCntDir = new Path(args[1] + "/docCount");
         Path step1_outputDir = new Path(args[1] + "/step1");
         Path step2_outputDir = new Path(args[1] + "/step2");
         Path step3_outputDir = new Path(args[1] + "/step3");
+
+        String docCntDir = args.length > 3 ? args[3] : args[1] + "/docCount";
 
         Configuration conf = getConf();
         if (conf == null) {
@@ -55,24 +56,28 @@ public class TF_IDF_Driver extends Configured implements Tool {
         conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
         conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
 
+        conf.set("mapreduce.reduce.memory.mb", "4096");
+
+        conf.set("mapreduce.task.io.sort.mb", "300");
+        conf.set("mapreduce.task.io.sort.factor", "30");
+
+        conf.setBoolean("mapreduce.map.output.compress", true);
+        conf.set("mapreduce.map.output.compress.codec", "com.hadoop.compression.lzo.LzoCodec");
+
         String gNameWeight = args.length > 2 ? args[2] : "1.0";
         conf.setDouble("gname.weight", Double.valueOf(gNameWeight));
-
-        if (args.length > 3 && args[3].equals("1")) {
-            conf.setBoolean("mapreduce.map.output.compress", true);
-            conf.set("mapreduce.map.output.compress.codec", "com.hadoop.compression.lzo.LzoCodec");
-        }
 
         JobControl jobControl = new JobControl("tf-idf jobs");
 
         // pre step configuration
         Job preJob = Job.getInstance(conf, "tf idf pre step");
-        preJob.setJarByClass(TF_IDF_Driver.class);
+        preJob.setJarByClass(LineCountMapper.class);
 
         FileInputFormat.addInputPath(preJob, new Path(args[0]));
-        FileOutputFormat.setOutputPath(preJob, docCntDir);
+        FileOutputFormat.setOutputPath(preJob, new Path(docCntDir));
 
         preJob.setMapperClass(LineCountMapper.class);
+
         preJob.setCombinerClass(LineCountReducer.class);
 
         preJob.setReducerClass(LineCountReducer.class);
@@ -85,9 +90,10 @@ public class TF_IDF_Driver extends Configured implements Tool {
 
         // step 1 configuration
         Job job1 = Job.getInstance(conf, "tf idf step1 job");
-        job1.setJarByClass(TF_IDF_Driver.class);
+        job1.setJarByClass(TermCountMapper.class);
 
         FileInputFormat.addInputPath(job1, new Path(args[0]));
+
         job1.setInputFormatClass(KeyValueTextInputFormat.class);
 
         job1.setMapperClass(TermCountMapper.class);
@@ -100,11 +106,11 @@ public class TF_IDF_Driver extends Configured implements Tool {
         job1.setOutputKeyClass(Text.class);
         job1.setOutputValueClass(IntWritable.class);
 
+//        FileOutputFormat.setOutputPath(job1, step1_outputDir);
+
         job1.setOutputFormatClass(SequenceFileOutputFormat.class);
-        if (args.length > 3 && args[3].equals("1")) {
-            SequenceFileOutputFormat.setOutputCompressionType(job1, SequenceFile.CompressionType.BLOCK);
-            SequenceFileOutputFormat.setOutputCompressorClass(job1, com.hadoop.compression.lzo.LzoCodec.class);
-        }
+        SequenceFileOutputFormat.setOutputCompressionType(job1, SequenceFile.CompressionType.BLOCK);
+        SequenceFileOutputFormat.setOutputCompressorClass(job1, com.hadoop.compression.lzo.LzoCodec.class);
         SequenceFileOutputFormat.setOutputPath(job1, step1_outputDir);
 
         ControlledJob controlledJob1 = new ControlledJob(conf);
@@ -113,8 +119,10 @@ public class TF_IDF_Driver extends Configured implements Tool {
 
         // step 2 configuration
         Job job2 = Job.getInstance(conf, "tf idf step2 job");
-        job2.setJarByClass(TF_IDF_Driver.class);
+        job2.setJarByClass(TermFrequencyMapper.class);
 
+//        FileInputFormat.addInputPath(job2, step1_outputDir);
+//        job2.setInputFormatClass(KeyValueTextInputFormat.class);
         SequenceFileInputFormat.addInputPath(job2, step1_outputDir);
         job2.setInputFormatClass(SequenceFileAsTextInputFormat.class);
 
@@ -123,15 +131,13 @@ public class TF_IDF_Driver extends Configured implements Tool {
         job2.setMapOutputValueClass(Text.class);
 
         // TODO: 2016/12/21 maybe add a combiner here
-        job2.setReducerClass(TermFrequencyReducer.class);
+        job2.setReducerClass(TermFrequencyReducer2.class);
         job2.setOutputKeyClass(Text.class);
-        job2.setOutputValueClass(DoubleWritable.class);
+        job2.setOutputValueClass(Text.class);
 
         job2.setOutputFormatClass(SequenceFileOutputFormat.class);
-        if (args.length > 3 && args[3].equals("1")) {
-            SequenceFileOutputFormat.setOutputCompressionType(job2, SequenceFile.CompressionType.BLOCK);
-            SequenceFileOutputFormat.setOutputCompressorClass(job2, com.hadoop.compression.lzo.LzoCodec.class);
-        }
+        SequenceFileOutputFormat.setOutputCompressionType(job2, SequenceFile.CompressionType.BLOCK);
+        SequenceFileOutputFormat.setOutputCompressorClass(job2, com.hadoop.compression.lzo.LzoCodec.class);
         SequenceFileOutputFormat.setOutputPath(job2, step2_outputDir);
 
         ControlledJob controlledJob2 = new ControlledJob(conf);
@@ -141,18 +147,18 @@ public class TF_IDF_Driver extends Configured implements Tool {
 
         // step 3 configuration
         Job job3 = Job.getInstance(conf, "tf idf step3 job");
-        job3.setJarByClass(TF_IDF_Driver.class);
+        job3.setJarByClass(TF_IDF_Reducer2.class);
 
         job3.addCacheFile(new URI(docCntDir + "/part-r-00000#docCnt"));
 
         SequenceFileInputFormat.addInputPath(job3, step2_outputDir);
         job3.setInputFormatClass(SequenceFileAsTextInputFormat.class);
 
-        job3.setMapperClass(TF_IDF_Mapper.class);
-        job3.setMapOutputKeyClass(Text.class);
-        job3.setMapOutputValueClass(Text.class);
+//        job3.setMapperClass(TF_IDF_Mapper.class);
+//        job3.setMapOutputKeyClass(Text.class);
+//        job3.setMapOutputValueClass(Text.class);
 
-        job3.setReducerClass(TF_IDF_Reducer.class);
+        job3.setReducerClass(TF_IDF_Reducer2.class);
         job3.setNumReduceTasks(5);
         job3.setOutputKeyClass(Text.class);
         job3.setOutputValueClass(DoubleWritable.class);

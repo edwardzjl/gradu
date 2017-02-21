@@ -1,4 +1,4 @@
-package document_clustering.similarity;
+package document_clustering.deprecated.similarity_trick;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -42,22 +42,15 @@ public class PreReducer extends Reducer<IntWritable, Text, Text, Text> {
                         } else {
                             this.outputKey.set(idAndWeight1[0] + "," + idAndWeight2[0]);
                         }
-
-                        String out = format(Double.valueOf(idAndWeight1[1]) * Double.valueOf(idAndWeight2[1]));
-                        this.outputValue.set(line[0] + ":" + out);
 //                        this.outputValue.set(line[0] + ":" + idAndWeight1[1] + "*" + idAndWeight2[1]);
-                        // doc1,doc2 \t term:sim
-//                      this.outputValue.set(line[0] + ":" + (Double.valueOf(idAndWeight1[1]) * Double.valueOf(idAndWeight2[1])));
+                        this.outputValue.set(line[0] + ":" + (Double.valueOf(idAndWeight1[1]) * Double.valueOf(idAndWeight2[1])));
                         // doc1,doc2 \t term:w1*w2
+                        // doc1,doc2 \t term:sim
                         context.write(this.outputKey, this.outputValue);
                     }
                 }
             }
         }
-    }
-
-    private static String format(double value) {
-        return String.format("%.2f", value);
     }
 }
 

@@ -32,21 +32,23 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
 
         Iterator<Text> iterator = values.iterator();
         StringBuilder stringBuilder = new StringBuilder();
-        int elemNum = 0;
+//        int elemNum = 0;
         while (iterator.hasNext()) {
             String value = iterator.next().toString();
             String[] lnoAndTFIDF = value.split("=");
             if (Double.valueOf(lnoAndTFIDF[1]) > 0.1d) {
-                elemNum++;
-                stringBuilder.append(value);
-                if (iterator.hasNext()) {
-                    stringBuilder.append(",");
-                }
+//                elemNum++;
+                stringBuilder.append(value).append(',');
+//                if (iterator.hasNext()) {
+//                    stringBuilder.append(",");
+//                }
             }
         }
-        if (elemNum > 1) {
-            // line_no=tf-idf,...
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+//        if (elemNum > 1) {
+        if (stringBuilder.length() > 1) {
             this.outputValue.set(stringBuilder.toString());
+            // term \t line_no=tf-idf,...
             context.write(key, this.outputValue);
         }
     }

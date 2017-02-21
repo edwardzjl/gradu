@@ -68,7 +68,7 @@ public class MSTDriver extends Configured implements Tool {
 
         //
         Job childJob = Job.getInstance(conf, "mst child job");
-        childJob.setJarByClass(MSTChildMapper.class);
+        childJob.setJarByClass(MSTDriver.class);
 
         childJob.addCacheFile(docCntFile);
 
