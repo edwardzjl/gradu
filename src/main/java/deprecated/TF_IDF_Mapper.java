@@ -1,4 +1,4 @@
-package document_clustering.tf_idf;
+package deprecated;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -19,7 +19,7 @@ public class TF_IDF_Mapper extends Mapper<Text, Text, Text, Text> {
 
     /**
      * @param key     term@@@id@@g_no@@line_no
-     * @param value   weight
+     * @param value   weight/sumOfWordsInDoc
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -30,9 +30,10 @@ public class TF_IDF_Mapper extends Mapper<Text, Text, Text, Text> {
 
         String[] termAndDoc = key.toString().split("@@@");
 
+        // term
         this.outputKey.set(termAndDoc[0]);
+        // id@@g_no@@line_no=weight / sumOfWordsInDocument
         this.outputValue.set(termAndDoc[1] + "=" + value.toString());
-        // term \t id@@g_no@@line_no=weight
         context.write(this.outputKey, this.outputValue);
     }
 }

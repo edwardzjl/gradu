@@ -5,18 +5,22 @@ import document_clustering.deprecated.MergeDriver;
 import document_clustering.deprecated.OneNodeSimilarityDriver;
 import document_clustering.deprecated.SplitedSimilarityDriver;
 import document_clustering.deprecated.VectorDriver;
+import document_clustering.init.Init0901Driver;
+import document_clustering.init.Init8703Driver;
+import document_clustering.inverted_index.FilterDriver;
 import document_clustering.inverted_index.InvertedIndexDriver;
-import document_clustering.linkback.*;
+import document_clustering.linkback.LastStepDriver;
+import document_clustering.linkback.ProcessClusterDriver;
+import document_clustering.linkback.Step1Driver;
+import document_clustering.linkback.Step2Driver;
 import document_clustering.linkback.bas0901.Process0901Driver;
 import document_clustering.linkback.bas8703.Process8703Driver;
 import document_clustering.mst.MSTDriver;
 import document_clustering.mst.MSTTestDriver2;
 import document_clustering.simhash.SimHashDriver;
 import document_clustering.similarity.ISimDriver;
-import document_clustering.similarity.InvertedSimilarityDriver;
+import document_clustering.deprecated.InvertedSimilarityDriver;
 import document_clustering.similarity.PreDriver;
-import document_clustering.init.Init0901Driver;
-import document_clustering.init.Init8703Driver;
 import document_clustering.tf_idf.TF_IDF_Driver;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -49,7 +53,7 @@ public class mrTests {
         Init8703Driver driver = new Init8703Driver();
         String[] args = new String[2];
         args[0] = "/final/init/in";
-        args[1] = "/final/init/out2";
+        args[1] = "/final/init/out";
         try {
             driver.run(args);
         } catch (Exception e) {
@@ -57,36 +61,19 @@ public class mrTests {
         }
     }
 
-    /**
-     * use simhash to detect duplicate records
-     */
+
     @Test
     public void simHash() {
-        deprecated.SimHashDriver driver = new deprecated.SimHashDriver();
-        String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/init/out/0901";
-        args[1] = "/user/edwardlol/final/simhash/0901";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @Test
-    public void simHash2() {
         SimHashDriver driver = new SimHashDriver();
         String[] args = new String[2];
-        args[0] = "/final/init/test";
-        args[1] = "/final/simhash_test";
+        args[0] = "/final/init/out";
+        args[1] = "/final/simhash";
         try {
             driver.run(args);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
 
     @Test
@@ -109,8 +96,8 @@ public class mrTests {
     public void tf_idf() {
         TF_IDF_Driver driver = new TF_IDF_Driver();
         String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/price/simhash/result";
-        args[1] = "/user/edwardlol/final/price/tf_idf";
+        args[0] = "/final/bench/simhash";
+        args[1] = "/final/bench/tf_idf";
         try {
             driver.run(args);
         } catch (Exception e) {
@@ -127,8 +114,21 @@ public class mrTests {
     public void invertedIndexTest() {
         InvertedIndexDriver driver = new InvertedIndexDriver();
         String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/price/tf_idf/result";
-        args[1] = "/user/edwardlol/final/price/iindex";
+        args[0] = "/final/bench/tf_idf/result";
+        args[1] = "/final/bench/iindex";
+        try {
+            driver.run(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void filteredInvertedIndexTest() {
+        FilterDriver driver = new FilterDriver();
+        String[] args = new String[2];
+        args[0] = "/final/bench/iindex";
+        args[1] = "/final/bench/filtered_iindex";
         try {
             driver.run(args);
         } catch (Exception e) {
@@ -140,8 +140,8 @@ public class mrTests {
     public void preTest() {
         PreDriver driver = new PreDriver();
         String[] args = new String[3];
-        args[0] = "/user/edwardlol/final/price/iindex";
-        args[1] = "/user/edwardlol/final/price/pre";
+        args[0] = "/final/bench/filtered_iindex/result";
+        args[1] = "/final/bench/pre";
         args[2] = "0";
         try {
             driver.run(args);
@@ -154,8 +154,8 @@ public class mrTests {
     public void isim() {
         ISimDriver driver = new ISimDriver();
         String[] args = new String[3];
-        args[0] = "/user/edwardlol/final/price/pre";
-        args[1] = "/user/edwardlol/final/price/isim";
+        args[0] = "/final/bench/pre";
+        args[1] = "/final/bench/isim";
         args[2] = "0";
         try {
             driver.run(args);
@@ -178,7 +178,6 @@ public class mrTests {
             e.printStackTrace();
         }
     }
-
 
 
     @Test
@@ -261,9 +260,6 @@ public class mrTests {
             e.printStackTrace();
         }
     }
-
-
-
 
 
     // their
@@ -390,6 +386,24 @@ public class mrTests {
         String[] args = new String[2];
         args[0] = "/user/edwardlol/playground/mst.5/result";
         args[1] = "/user/edwardlol/playground/result.5";
+        try {
+            driver.run(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * use simhash to detect duplicate records
+     */
+    @Deprecated
+    @Ignore
+    @Test
+    public void simHash_old() {
+        SimHashDriver driver = new SimHashDriver();
+        String[] args = new String[2];
+        args[0] = "/user/edwardlol/final/init/out/0901";
+        args[1] = "/user/edwardlol/final/simhash/0901";
         try {
             driver.run(args);
         } catch (Exception e) {

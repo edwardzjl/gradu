@@ -1,4 +1,4 @@
-package document_clustering.tf_idf;
+package deprecated.tf_idf2;
 
 import document_clustering.util.CollectionUtil;
 import org.apache.hadoop.conf.Configuration;
@@ -13,12 +13,12 @@ import java.util.Map;
 /**
  * Created by edwardlol on 2016/12/3.
  */
-public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritable> {
+public class TermFrequencyReducer2 extends Reducer<Text, Text, Text, Text> {
     //~ Instance fields --------------------------------------------------------
 
     private Text outputKey = new Text();
 
-    private DoubleWritable outputValue = new DoubleWritable();
+    private Text outputValue = new Text();
 
     private double weight;
 
@@ -37,6 +37,7 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
     }
 
     /**
+     *
      * @param key     id@@g_no@@line_no
      * @param values  position::term=count
      * @param context
@@ -68,12 +69,11 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
         }
 
         for (Map.Entry<String, Double> entry : tempCounter.entrySet()) {
-            // term@@@id@@g_no@@line_no
-            this.outputKey.set(entry.getKey() + "@@@" + key.toString());
-            // weight / sumOfWordsInDoc
+            // term
+            this.outputKey.set(entry.getKey());
+            // id@@g_no@@line_no=weight
             double wtf = entry.getValue() / sumOfWordsInDoc;
-            this.outputValue.set(wtf);
-            // term@@@id@@g_no@@line_no \t tf
+            this.outputValue.set(key.toString() + "=" + wtf);
             context.write(this.outputKey, this.outputValue);
         }
     }

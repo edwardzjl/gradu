@@ -58,8 +58,7 @@ public class SimHashStep1Reducer extends Reducer<LongWritable, Text, IntWritable
             throws IOException, InterruptedException {
 
         for (Text value : values) {
-            String _value = value.toString();
-            String[] keyAndContent = _value.split("::");
+            String[] keyAndContent = value.toString().split("::");
 
             SimHash thisHash = new SimHash(keyAndContent[1], key.get());
 

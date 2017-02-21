@@ -5,6 +5,7 @@ import com.huaban.analysis.jieba.SegToken;
 import com.huaban.analysis.jieba.WordDictionary;
 import document_clustering.util.CollectionUtil;
 import document_clustering.util.JiebaFactory;
+import org.ansj.splitWord.analysis.ToAnalysis;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
@@ -29,36 +30,27 @@ import java.util.regex.Pattern;
  * Created by edwardlol on 2016/12/4.
  */
 public class UtilTests {
-    //~ Methods ----------------------------------------------------------------
-
-
     private Map<String, Set<Integer>> aaa = new HashMap<>();
 
     private int splitNum = 4;
 
+    //~ Methods ----------------------------------------------------------------
 
-    Map<Pattern, String> map = new HashMap<>();
-
-    private void init() {
-        map.put(Pattern.compile("5座"), "五座");
-        map.put(Pattern.compile("7座"), "七座");
-        map.put(Pattern.compile("4mat[12]c"), "4matic");
+    @Test
+    public void sepTest() {
+        String str = "欢迎使用ansj_seg,(ansj中文分词)在这里如果你遇到什么问题都可以联系我.我一定尽我所能.帮助大家.ansj_seg更快,更准,更自由!" ;
+        System.out.println(ToAnalysis.parse(str));
     }
 
-    private String transform(String term) {
-        init();
-        String result = term;
-        for (Map.Entry<Pattern, String> entry : map.entrySet()) {
-            result = entry.getKey().matcher(result).replaceAll(entry.getValue());
-        }
-        return result;
+    private static String format(double value) {
+        return String.format("%.2f", value);
     }
 
     @Test
-    public void replaceTest() {
-        System.out.println(transform("奔驰5座"));
-        System.out.println(transform("baoma4mat1c"));
+    public void doubleTest() {
+        System.out.println(format(1.254));
     }
+
 
     @Test
     public void wordTest() {

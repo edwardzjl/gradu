@@ -107,8 +107,6 @@ public class Init8703Mapper extends Mapper<LongWritable, Text, Text, Text> {
      * @return stringBuilder
      */
     private StringBuilder append(StringBuilder stringBuilder, String sentence) {
-//        StringBuilder stringBuilder = new StringBuilder();
-//        stringBuilder.setLength(0);
         List<String> terms = jieba.seperate(sentence, JiebaSegmenter.SegMode.SEARCH);
         if (terms.size() > 0) {
             for (String term : terms) {

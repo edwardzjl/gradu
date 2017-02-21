@@ -1,6 +1,5 @@
-package document_clustering.tf_idf;
+package deprecated;
 
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -13,14 +12,14 @@ import java.util.Map;
 /**
  * Created by edwardlol on 2016/12/3.
  */
-public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
+public class TF_IDF_Reducer extends Reducer<Text, Text, Text, Text> {
     //~ Instance fields --------------------------------------------------------
 
     private int documentNumber;
 
     private Text outputKey = new Text();
 
-    private DoubleWritable outputValue = new DoubleWritable();
+    private Text outputValue = new Text();
 
     private Map<String, String> termFrequencies = new HashMap<>();
 
@@ -43,8 +42,9 @@ public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
     }
 
     /**
+     *
      * @param key     term
-     * @param values  id@@g_no@@line_no=weight
+     * @param values  id@@g_no@@line_no=weight / sumOfWordsInDocument
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -59,22 +59,25 @@ public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
 
         for (Text value : values) {
             // docAndFreq[0] = id@@g_no@@line_no
-            // docAndFreq[1] = weight
+            // docAndFreq[1] = weight / sumOfWordsInDocument
             String[] docAndFreq = value.toString().split("=");
             appearInAll++;
             this.termFrequencies.put(docAndFreq[0], docAndFreq[1]);
         }
 
         for (Map.Entry<String, String> entry : termFrequencies.entrySet()) {
+            String[] termFreqAndTotalWords = entry.getValue().split("/");
 
-            double tf = Double.valueOf(entry.getValue());
+            double tf = Double.valueOf(termFreqAndTotalWords[0])
+                    / Double.valueOf(termFreqAndTotalWords[1]);
 
             double idf = Math.log((double) this.documentNumber
                     / (double) (appearInAll + 1));
 
+            // term@@@id@@g_no@@line_no
             this.outputKey.set(key + "@@@" + entry.getKey());
-            this.outputValue.set(tf * idf);
-            // term@@@id@@g_no@@line_no \t tf-idf
+            this.outputValue.set(String.valueOf(tf * idf));
+
             context.write(this.outputKey, this.outputValue);
         }
     }

@@ -1,4 +1,4 @@
-package document_clustering.tf_idf;
+package deprecated.tf_idf2;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;

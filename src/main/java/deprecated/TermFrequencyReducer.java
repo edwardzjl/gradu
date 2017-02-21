@@ -1,8 +1,7 @@
-package document_clustering.tf_idf;
+package deprecated;
 
 import document_clustering.util.CollectionUtil;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -13,12 +12,12 @@ import java.util.Map;
 /**
  * Created by edwardlol on 2016/12/3.
  */
-public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritable> {
+public class TermFrequencyReducer extends Reducer<Text, Text, Text, Text> {
     //~ Instance fields --------------------------------------------------------
 
     private Text outputKey = new Text();
 
-    private DoubleWritable outputValue = new DoubleWritable();
+    private Text outputValue = new Text();
 
     private double weight;
 
@@ -37,6 +36,7 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
     }
 
     /**
+     *
      * @param key     id@@g_no@@line_no
      * @param values  position::term=count
      * @param context
@@ -47,33 +47,31 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
     protected void reduce(Text key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
         int sumOfWordsInDoc = 0;
-        tempCounter.clear();
+        this.tempCounter.clear();
 
         for (Text val : values) {
             // positionTermCnt[0] = position
             // positionTermCnt[1] = term=count
             String[] positionTermCnt = val.toString().split("::");
-            String place = positionTermCnt[0];
+            String position = positionTermCnt[0];
 
             String[] termCnt = positionTermCnt[1].split("=");
 
             int count = Integer.valueOf(termCnt[1]);
             sumOfWordsInDoc += count;
 
-            double weightedCount = place.equals("title") ?
+            double weightedCount = position.equals("title") ?
                     this.weight * count : count;
 
             // term : weight
-            CollectionUtil.updateCountMap(tempCounter, termCnt[0], weightedCount);
+            CollectionUtil.updateCountMap(this.tempCounter, termCnt[0], weightedCount);
         }
 
-        for (Map.Entry<String, Double> entry : tempCounter.entrySet()) {
+        for (Map.Entry<String, Double> entry : this.tempCounter.entrySet()) {
             // term@@@id@@g_no@@line_no
             this.outputKey.set(entry.getKey() + "@@@" + key.toString());
             // weight / sumOfWordsInDoc
-            double wtf = entry.getValue() / sumOfWordsInDoc;
-            this.outputValue.set(wtf);
-            // term@@@id@@g_no@@line_no \t tf
+            this.outputValue.set(entry.getValue() + "/" + sumOfWordsInDoc);
             context.write(this.outputKey, this.outputValue);
         }
     }
