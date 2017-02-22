@@ -6,6 +6,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 /**
  * Created by edwardlol on 2016/12/2.
@@ -24,6 +25,10 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
 
     private int splitNum;
 
+    private int longThreshold;
+
+    private DecimalFormat decimalFormat = new DecimalFormat( "0.0000");
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -31,6 +36,7 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
         Configuration conf = context.getConfiguration();
         this.reduceNum = conf.getInt("reducer.num", 1);
         this.splitNum = conf.getInt("split.num", 6);
+        this.longThreshold = conf.getInt("long.threshold", 1000);
     }
 
     /**
@@ -46,26 +52,28 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
 
         String[] docs = value.toString().split(",");
 
-        if (docs.length > 1000) {
-            int contentsInBlock = docs.length / splitNum;
-            if (docs.length % splitNum != 0) {
-                contentsInBlock++;
+        if (docs.length > this.longThreshold) {
+            /*  */
+            int docsInSeg = docs.length / this.splitNum;
+            if (docs.length % this.splitNum != 0) {
+                docsInSeg++;
             }
 
-            for (int i = 0; i < splitNum - 1; i++) {
+            for (int i = 0; i < this.splitNum - 1; i++) {
                 StringBuilder output = new StringBuilder();
-                for (int a = 0; a < contentsInBlock; a++) {
-                    output.append(docs[i * contentsInBlock + a]).append(',');
+                for (int a = 0; a < docsInSeg; a++) {
+                    // TODO: 17-2-22 make the content shorter
+                    output.append(docs[i * docsInSeg + a]).append(',');
                 }
-                for (int j = i + 1; j < splitNum; j++) {
-                    for (int b = 0; b < contentsInBlock; b++) {
-                        int index = j * contentsInBlock + b;
+                for (int j = i + 1; j < this.splitNum; j++) {
+                    for (int b = 0; b < docsInSeg; b++) {
+                        int index = j * docsInSeg + b;
                         if (index >= docs.length) {
                             break;
                         }
                         output.append(docs[index]).append(',');
                     }
-                    this.outputKey.set(bigIndex++);
+                    this.outputKey.set(this.bigIndex++);
                     this.outputValue.set(key.toString() + ":"
                             + output.deleteCharAt(output.length() - 1).toString());
                     // container \t term:doc_line_no=tf-idf,...

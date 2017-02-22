@@ -4,6 +4,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 
 /**
@@ -18,6 +19,8 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
     private Text outputValue = new Text();
 
     private StringBuilder stringBuilder = new StringBuilder();
+
+    private DecimalFormat decimalFormat = new DecimalFormat( "0.0000");
 
     //~ Methods ----------------------------------------------------------------
 
@@ -36,12 +39,13 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
 
         for (Text value : values) {
             String[] idAndTFIDF = value.toString().split("=");
+            double tf_idf = Double.valueOf(idAndTFIDF[1]);
             // filter the small tf_idfs
-            if (Double.valueOf(idAndTFIDF[1]) > 0.1d) {
-                this.stringBuilder.append(value).append(',');
+            if (tf_idf > 0.1d) {
+                this.stringBuilder.append(idAndTFIDF[0]).append('=')
+                        .append(this.decimalFormat.format(tf_idf)).append(',');
             }
         }
-
         this.stringBuilder.deleteCharAt(this.stringBuilder.length() - 1);
 
         if (this.stringBuilder.length() > 1) {

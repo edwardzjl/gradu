@@ -33,7 +33,7 @@ public class InvertedIndexTests {
         InvertedIndexDriver driver = new InvertedIndexDriver();
         String[] args = new String[2];
         args[0] = "/user/edwardlol/final/normalizedTF_IDF";
-        args[1] = "/user/edwardlol/final/invertedIndex";
+        args[1] = "/user/edwardlol/final/invertedIndex2";
         try {
             driver.run(args);
         } catch (Exception e) {
