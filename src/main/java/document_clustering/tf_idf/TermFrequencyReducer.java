@@ -22,7 +22,10 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
 
     private double weight;
 
-    private Map<String, Double> tempCounter = new HashMap<>();
+    /**
+     *
+     */
+    private Map<String, Double> termWeightMap = new HashMap<>();
 
     //~ Methods ----------------------------------------------------------------
 
@@ -37,7 +40,7 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
     }
 
     /**
-     * @param key     id@@g_no@@line_no
+     * @param key     entry_id@@g_no@@group_id
      * @param values  position::term=count
      * @param context
      * @throws IOException
@@ -46,8 +49,8 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
-        int sumOfWordsInDoc = 0;
-        tempCounter.clear();
+        int termsCntInDoc = 0;
+        this.termWeightMap.clear();
 
         for (Text val : values) {
             // positionTermCnt[0] = position
@@ -58,22 +61,22 @@ public class TermFrequencyReducer extends Reducer<Text, Text, Text, DoubleWritab
             String[] termCnt = positionTermCnt[1].split("=");
 
             int count = Integer.valueOf(termCnt[1]);
-            sumOfWordsInDoc += count;
+            termsCntInDoc += count;
 
             double weightedCount = place.equals("title") ?
                     this.weight * count : count;
 
             // term : weight
-            CollectionUtil.updateCountMap(tempCounter, termCnt[0], weightedCount);
+            CollectionUtil.updateCountMap(this.termWeightMap, termCnt[0], weightedCount);
         }
 
-        for (Map.Entry<String, Double> entry : tempCounter.entrySet()) {
-            // term@@@id@@g_no@@line_no
+        for (Map.Entry<String, Double> entry : this.termWeightMap.entrySet()) {
+            // term@@@entry_id@@g_no@@group_id
             this.outputKey.set(entry.getKey() + "@@@" + key.toString());
-            // weight / sumOfWordsInDoc
-            double wtf = entry.getValue() / sumOfWordsInDoc;
+            // weight / termsCntInDoc
+            double wtf = entry.getValue() / termsCntInDoc;
             this.outputValue.set(wtf);
-            // term@@@id@@g_no@@line_no \t tf
+            // term@@@entry_id@@g_no@@group_id \t weighted_tf
             context.write(this.outputKey, this.outputValue);
         }
     }

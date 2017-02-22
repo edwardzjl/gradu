@@ -19,7 +19,7 @@ public class TermCountMapper extends Mapper<Text, Text, Text, IntWritable> {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     doc_id
+     * @param key     group_id
      * @param value   entry_id@@g_no::g_name##[g_model]
      * @param context
      * @throws IOException
@@ -37,14 +37,14 @@ public class TermCountMapper extends Mapper<Text, Text, Text, IntWritable> {
             String[] name = nameAndModel[0].split(" ");
             for (String term : name) {
                 this.outputKey.set(term + "@@@" + line[0] + "@@" + key.toString() + "::title");
-                // term@@@id@@g_no@@line_no::title \t 1
+                // term@@@entry_id@@g_no@@group_id::title \t 1
                 context.write(this.outputKey, this.outputValue);
             }
             if (nameAndModel.length == 2) {
                 String[] model = nameAndModel[1].split(" ");
                 for (String term : model) {
                     this.outputKey.set(term + "@@@" + line[0] + "@@" + key.toString() + "::content");
-                    // term@@@id@@g_no@@line_no::content \t 1
+                    // term@@@entry_id@@g_no@@group_id::content \t 1
                     context.write(this.outputKey, this.outputValue);
                 }
             }

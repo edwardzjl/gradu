@@ -18,7 +18,7 @@ public class TermFrequencyMapper extends Mapper<Text, Text, Text, Text> {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     term@@@id@@g_no@@line_no::position
+     * @param key     term@@@entry_id@@g_no@@group_id::position
      * @param value   count
      * @param context
      * @throws IOException
@@ -28,17 +28,17 @@ public class TermFrequencyMapper extends Mapper<Text, Text, Text, Text> {
     public void map(Text key, Text value, Context context)
             throws IOException, InterruptedException {
 
-        // termDoc[0] = term
-        // termDoc[1] = id@@g_no@@line_no::position
-        String[] termDoc = key.toString().split("@@@");
+        // termAndDoc[0] = term
+        // termAndDoc[1] = entry_id@@g_no@@group_id::position
+        String[] termAndDoc = key.toString().split("@@@");
 
-        // idAndPlace[0] = id@@g_no@@line_no
+        // idAndPlace[0] = entry_id@@g_no@@group_id
         // idAndPlace[1] = position
-        String[] idAndPlace = termDoc[1].split("::");
+        String[] idAndPlace = termAndDoc[1].split("::");
 
         this.outputKey.set(idAndPlace[0]);
-        this.outputValue.set(idAndPlace[1] + "::" + termDoc[0] + "=" + value.toString());
-        // id@@g_no@@line_no \t position::term=count
+        this.outputValue.set(idAndPlace[1] + "::" + termAndDoc[0] + "=" + value.toString());
+        // entry_id@@g_no@@group_id \t position::term=count
         context.write(this.outputKey, this.outputValue);
     }
 }

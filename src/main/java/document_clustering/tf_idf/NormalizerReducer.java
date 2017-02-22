@@ -8,11 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * D = total number of documents in corpus. This can be passed by the driver as a constant;
- * d = number of documents in corpus where the term appears. It is a counter over the reduced values for each term;
- * TFIDF = n/N * log(D/d);
- * Output: ((word@document), d/D, (n/N), TFIDF)
- * <p>
  * Created by edwardlol on 2016/12/3.
  */
 public class NormalizerReducer extends Reducer<Text, Text, Text, Text> {
@@ -27,7 +22,7 @@ public class NormalizerReducer extends Reducer<Text, Text, Text, Text> {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     id@@g_no@@line_no
+     * @param key     entry_id@@g_no@@group_id
      * @param values  term=tf_idf
      * @param context
      * @throws IOException
@@ -55,6 +50,7 @@ public class NormalizerReducer extends Reducer<Text, Text, Text, Text> {
             Double tf_idf = entry.getValue();
             this.outputKey.set(term + "@@@" + key.toString());
             this.outputValue.set(tf_idf.toString());
+            // term@@@entry_id@@g_no@@group_id \t tf_idf
             context.write(this.outputKey, this.outputValue);
         }
     }

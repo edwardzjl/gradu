@@ -1,24 +1,35 @@
-package someone_else;
+package clustering;
+
+import document_clustering.tf_idf.TF_IDF_Driver;
+import org.junit.Test;
 
 import java.io.*;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by edwardlol on 2016/12/17.
+ * Created by edwardlol on 17-2-22.
  */
-public class TF_IDF_Demo {
-    //~ Static fields/initializers ---------------------------------------------
+public class TF_IDF_Tests {
 
-    //~ Instance fields --------------------------------------------------------
+    /**
+     * calculate each term's tf-idf of every document
+     */
+    @Test
+    public void tf_idf() {
+        TF_IDF_Driver driver = new TF_IDF_Driver();
+        String[] args = new String[2];
+        args[0] = "/user/edwardlol/final/nonSimhash/0901";
+        args[1] = "/user/edwardlol/final/tf_idf/0901";
+        try {
+            driver.run(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    //~ Constructors -----------------------------------------------------------
-
-    //~ Methods ----------------------------------------------------------------
-
-    public static void main(String[] args) {
-//        DecimalFormat dformat = new DecimalFormat("######0.00");
+    @Test
+    public void demo() {
         Map<Integer, String> map = new HashMap<>();
         try (FileReader fileReader = new FileReader("datasets/invertedIndex");
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
@@ -52,7 +63,7 @@ public class TF_IDF_Demo {
                     String term = map.get(Integer.valueOf(indexAndValue[0]));
                     bufferedWriter.append(term).append(":")
                             .append(String.format("%.2f", Double.valueOf(indexAndValue[1])))
-                    .append(", ");
+                            .append(", ");
                 }
                 bufferedWriter.append("\n");
                 bufferedWriter.flush();
@@ -64,5 +75,3 @@ public class TF_IDF_Demo {
         }
     }
 }
-
-// End TF_IDF_Demo.java

@@ -22,7 +22,7 @@ public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
 
     private DoubleWritable outputValue = new DoubleWritable();
 
-    private Map<String, String> termFrequencies = new HashMap<>();
+    private Map<String, String> termAndWTF = new HashMap<>();
 
     //~ Methods ----------------------------------------------------------------
 
@@ -44,7 +44,7 @@ public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
 
     /**
      * @param key     term
-     * @param values  id@@g_no@@line_no=weight
+     * @param values  entry_id@@g_no@@group_id=weighted_tf
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -53,28 +53,28 @@ public class TF_IDF_Reducer extends Reducer<Text, Text, Text, DoubleWritable> {
     protected void reduce(Text key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
 
-        this.termFrequencies.clear();
-        // total frequency of this word
+        this.termAndWTF.clear();
+        // total appear times of this term
         int appearInAll = 0;
-
+        /* count the total appear times of each term
+         * and store them with their weighted tf in a map  */
         for (Text value : values) {
-            // docAndFreq[0] = id@@g_no@@line_no
-            // docAndFreq[1] = weight
-            String[] docAndFreq = value.toString().split("=");
             appearInAll++;
-            this.termFrequencies.put(docAndFreq[0], docAndFreq[1]);
+            // docAndFreq[0] = entry_id@@g_no@@group_id
+            // docAndFreq[1] = weighted_tf
+            String[] docAndFreq = value.toString().split("=");
+            this.termAndWTF.put(docAndFreq[0], docAndFreq[1]);
         }
 
-        for (Map.Entry<String, String> entry : termFrequencies.entrySet()) {
-
-            double tf = Double.valueOf(entry.getValue());
+        for (Map.Entry<String, String> entry : termAndWTF.entrySet()) {
+            double wtf = Double.valueOf(entry.getValue());
 
             double idf = Math.log((double) this.documentNumber
                     / (double) (appearInAll + 1));
 
             this.outputKey.set(key + "@@@" + entry.getKey());
-            this.outputValue.set(tf * idf);
-            // term@@@id@@g_no@@line_no \t tf-idf
+            this.outputValue.set(wtf * idf);
+            // term@@@entry_id@@g_no@@group_id \t tf-idf
             context.write(this.outputKey, this.outputValue);
         }
     }

@@ -1,4 +1,4 @@
-package someone_else;
+package clustering;
 
 import benchmark.tools.DuplicatorDriver;
 import document_clustering.deprecated.MergeDriver;
@@ -31,51 +31,6 @@ import partition_test.pDriver;
  */
 public class mrTests {
 
-    /**
-     * read the defect lib csv file and get the contents in "description" field, each line as a document
-     * then seperate the terms of each document, writables them in the format of id, term...
-     */
-    @Test
-    public void init0901Test() {
-        Init0901Driver driver = new Init0901Driver();
-        String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/init/in/0901";
-        args[1] = "/user/edwardlol/final/init/out/0901";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void init8703Test() {
-        Init8703Driver driver = new Init8703Driver();
-        String[] args = new String[2];
-        args[0] = "/final/init/in";
-        args[1] = "/final/init/out";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @Test
-    public void simHash() {
-        SimHashDriver driver = new SimHashDriver();
-        String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/init/out/0901";
-        args[1] = "/user/edwardlol/final/simhash/0901";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
     @Test
     public void dup() {
         DuplicatorDriver driver = new DuplicatorDriver();
@@ -89,52 +44,7 @@ public class mrTests {
         }
     }
 
-    /**
-     * calculate each term's tf-idf of every document
-     */
-    @Test
-    public void tf_idf() {
-        TF_IDF_Driver driver = new TF_IDF_Driver();
-        String[] args = new String[2];
-        args[0] = "/final/bench/simhash";
-        args[1] = "/final/bench/tf_idf";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    /**
-     * read the big document file and calculate the inverted index
-     * the inverted index is formatted like: term \t [document_id...]
-     * the document id is represented as line number in the big document file
-     */
-    @Test
-    public void invertedIndexTest() {
-        InvertedIndexDriver driver = new InvertedIndexDriver();
-        String[] args = new String[2];
-        args[0] = "/final/bench/tf_idf/result";
-        args[1] = "/final/bench/iindex";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void filteredInvertedIndexTest() {
-        FilterDriver driver = new FilterDriver();
-        String[] args = new String[2];
-        args[0] = "/final/bench/iindex";
-        args[1] = "/final/bench/filtered_iindex";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     public void preTest() {

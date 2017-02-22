@@ -20,7 +20,7 @@ public class InvertedIndexMapper extends Mapper<Text, Text, Text, Text> {
     //~  Methods ---------------------------------------------------------------
 
     /**
-     * @param key     term@@@entry_id@@g_no@@line_no
+     * @param key     term@@@entry_id@@g_no@@group_id
      * @param value   tf-idf
      * @param context
      * @throws IOException
@@ -39,7 +39,7 @@ public class InvertedIndexMapper extends Mapper<Text, Text, Text, Text> {
 
         this.outputKey.set(term);
         this.outputValue.set(id_array[2] + "=" + tf_idf);
-        // term \t line_no=tf-idf
+        // term \t group_id=tf-idf
         context.write(this.outputKey, this.outputValue);
     }
 }

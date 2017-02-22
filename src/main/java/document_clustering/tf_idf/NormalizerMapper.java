@@ -19,7 +19,7 @@ public class NormalizerMapper extends Mapper<Text, Text, Text, Text> {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     term@@@id@@g_no@@line_no
+     * @param key     term@@@entry_id@@g_no@@group_id
      * @param value   tf_idf
      * @param context
      * @throws IOException

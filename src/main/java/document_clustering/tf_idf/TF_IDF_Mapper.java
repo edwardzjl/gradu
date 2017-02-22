@@ -18,8 +18,8 @@ public class TF_IDF_Mapper extends Mapper<Text, Text, Text, Text> {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     term@@@id@@g_no@@line_no
-     * @param value   weight
+     * @param key     term@@@entry_id@@g_no@@group_id
+     * @param value   weighted_tf
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -32,7 +32,7 @@ public class TF_IDF_Mapper extends Mapper<Text, Text, Text, Text> {
 
         this.outputKey.set(termAndDoc[0]);
         this.outputValue.set(termAndDoc[1] + "=" + value.toString());
-        // term \t id@@g_no@@line_no=weight
+        // term \t entry_id@@g_no@@group_id=weighted_tf
         context.write(this.outputKey, this.outputValue);
     }
 }

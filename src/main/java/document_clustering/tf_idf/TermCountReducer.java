@@ -17,8 +17,7 @@ public class TermCountReducer extends Reducer<Text, IntWritable, Text, IntWritab
     //~ Methods ----------------------------------------------------------------
 
     /**
-     *
-     * @param key     term@@@id@@g_no@@line_no::content
+     * @param key     term@@@entry_id@@g_no@@group_id::content
      * @param values  count
      * @param context
      * @throws IOException
@@ -32,7 +31,6 @@ public class TermCountReducer extends Reducer<Text, IntWritable, Text, IntWritab
         for (IntWritable val : values) {
             sum += val.get();
         }
-        //write the key and the adjusted value (removing the last comma)
         this.outputValue.set(sum);
         context.write(key, this.outputValue);
     }

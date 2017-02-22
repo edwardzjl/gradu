@@ -1,6 +1,5 @@
-package someone_else;
+package partition_test;
 
-import java.awt.image.ImagingOpException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

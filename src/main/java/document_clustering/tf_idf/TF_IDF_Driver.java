@@ -55,8 +55,8 @@ public class TF_IDF_Driver extends Configured implements Tool {
         conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
         conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
 
-        String gNameWeight = args.length > 2 ? args[2] : "1.0";
-        conf.setDouble("gname.weight", Double.valueOf(gNameWeight));
+        String gnameWeight = args.length > 2 ? args[2] : "1.0";
+        conf.setDouble("gname.weight", Double.valueOf(gnameWeight));
 
         if (args.length > 3 && args[3].equals("1")) {
             conf.setBoolean("mapreduce.map.output.compress", true);
@@ -65,7 +65,8 @@ public class TF_IDF_Driver extends Configured implements Tool {
 
         JobControl jobControl = new JobControl("tf-idf jobs");
 
-        // pre step configuration
+        /* pre step, count documents number in the corpus */
+
         Job preJob = Job.getInstance(conf, "tf idf pre step");
         preJob.setJarByClass(TF_IDF_Driver.class);
 
@@ -83,7 +84,8 @@ public class TF_IDF_Driver extends Configured implements Tool {
         controlledPreJob.setJob(preJob);
         jobControl.addJob(controlledPreJob);
 
-        // step 1 configuration
+        /* step 1, calculate term count of each document */
+
         Job job1 = Job.getInstance(conf, "tf idf step1 job");
         job1.setJarByClass(TF_IDF_Driver.class);
 
@@ -111,7 +113,8 @@ public class TF_IDF_Driver extends Configured implements Tool {
         controlledJob1.setJob(job1);
         jobControl.addJob(controlledJob1);
 
-        // step 2 configuration
+        /* step 2, calculate the term frequency of each document */
+
         Job job2 = Job.getInstance(conf, "tf idf step2 job");
         job2.setJarByClass(TF_IDF_Driver.class);
 
@@ -122,7 +125,6 @@ public class TF_IDF_Driver extends Configured implements Tool {
         job2.setMapOutputKeyClass(Text.class);
         job2.setMapOutputValueClass(Text.class);
 
-        // TODO: 2016/12/21 maybe add a combiner here
         job2.setReducerClass(TermFrequencyReducer.class);
         job2.setOutputKeyClass(Text.class);
         job2.setOutputValueClass(DoubleWritable.class);
@@ -139,7 +141,8 @@ public class TF_IDF_Driver extends Configured implements Tool {
         controlledJob2.addDependingJob(controlledJob1);
         jobControl.addJob(controlledJob2);
 
-        // step 3 configuration
+        /* step 3, calculate tf_idf */
+
         Job job3 = Job.getInstance(conf, "tf idf step3 job");
         job3.setJarByClass(TF_IDF_Driver.class);
 
@@ -166,7 +169,9 @@ public class TF_IDF_Driver extends Configured implements Tool {
 
         jobControl.addJob(controlledJob3);
 
-        // normalizer job
+        /* step4, normalizer the documents so the lenth
+        of their vector equals to 1 */
+
         Job job4 = Job.getInstance(conf, "tf idf normalizer job");
         job4.setJarByClass(NormalizerMapper.class);
 

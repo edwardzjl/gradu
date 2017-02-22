@@ -1,5 +1,6 @@
-package someone_else;
+package clustering;
 
+import com.google.common.collect.Maps;
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.huaban.analysis.jieba.SegToken;
 import com.huaban.analysis.jieba.WordDictionary;
@@ -282,6 +283,9 @@ public class UtilTests {
         }
         return vector;
     }
+
+
+
 }
 
 // End UtilTests.java

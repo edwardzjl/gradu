@@ -17,6 +17,8 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
 
     private Text outputValue = new Text();
 
+    private StringBuilder stringBuilder = new StringBuilder();
+
     //~ Methods ----------------------------------------------------------------
 
     /**
@@ -30,25 +32,20 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
     public void reduce(Text key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
 
-        Iterator<Text> iterator = values.iterator();
-        StringBuilder stringBuilder = new StringBuilder();
-//        int elemNum = 0;
-        while (iterator.hasNext()) {
-            String value = iterator.next().toString();
-            String[] lnoAndTFIDF = value.split("=");
+        this.stringBuilder.setLength(0);
+
+        for (Text value : values) {
+            String[] lnoAndTFIDF = value.toString().split("=");
             if (Double.valueOf(lnoAndTFIDF[1]) > 0.1d) {
-//                elemNum++;
-                stringBuilder.append(value).append(',');
-//                if (iterator.hasNext()) {
-//                    stringBuilder.append(",");
-//                }
+                this.stringBuilder.append(value).append(',');
             }
         }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-//        if (elemNum > 1) {
-        if (stringBuilder.length() > 1) {
-            this.outputValue.set(stringBuilder.toString());
-            // term \t line_no=tf-idf,...
+
+        this.stringBuilder.deleteCharAt(this.stringBuilder.length() - 1);
+
+        if (this.stringBuilder.length() > 1) {
+            this.outputValue.set(this.stringBuilder.toString());
+            // term \t group_id=tf-idf,...
             context.write(key, this.outputValue);
         }
     }
