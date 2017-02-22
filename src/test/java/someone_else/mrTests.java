@@ -66,8 +66,8 @@ public class mrTests {
     public void simHash() {
         SimHashDriver driver = new SimHashDriver();
         String[] args = new String[2];
-        args[0] = "/final/init/out";
-        args[1] = "/final/simhash";
+        args[0] = "/user/edwardlol/final/init/out/0901";
+        args[1] = "/user/edwardlol/final/simhash/0901";
         try {
             driver.run(args);
         } catch (Exception e) {

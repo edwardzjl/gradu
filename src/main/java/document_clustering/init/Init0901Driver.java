@@ -42,7 +42,7 @@ public class Init0901Driver extends Configured implements Tool {
         }
 
         Job job = Job.getInstance(conf, "0901 init job");
-        job.setJarByClass(Init0901Mapper.class);
+        job.setJarByClass(document_clustering.deprecated.Init0901Mapper.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
 

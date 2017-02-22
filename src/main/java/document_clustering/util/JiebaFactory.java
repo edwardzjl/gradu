@@ -17,16 +17,19 @@ public class JiebaFactory {
     //~ Static fields/initializers ---------------------------------------------
 
     private static JiebaFactory instance;
-    public JiebaSegmenter segmenter = new JiebaSegmenter();
 
     //~ Instance fields --------------------------------------------------------
+
+    public JiebaSegmenter segmenter = new JiebaSegmenter();
+
+    //~ Constructors -----------------------------------------------------------
 
     private JiebaFactory(String dictPath) {
         WordDictionary wordDictionary = WordDictionary.getInstance();
         wordDictionary.init(Paths.get(dictPath));
     }
 
-    //~ Constructors -----------------------------------------------------------
+    //~ Methods ----------------------------------------------------------------
 
     public static JiebaFactory getInstance(String dictPath) {
         if (instance == null) {
@@ -34,8 +37,6 @@ public class JiebaFactory {
         }
         return instance;
     }
-
-    //~ Methods ----------------------------------------------------------------
 
     /**
      * seperate words in sentence

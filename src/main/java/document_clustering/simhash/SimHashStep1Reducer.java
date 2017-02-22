@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * group the comodities by their simhash
+ * <p>
  * Created by edwardlol on 2016/12/3.
  */
 public class SimHashStep1Reducer extends Reducer<LongWritable, Text, IntWritable, Text> {

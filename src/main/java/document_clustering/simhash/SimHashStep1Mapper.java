@@ -8,6 +8,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 
 /**
+ * calculate the simhash of every comodity
+ * <p>
  * Created by edwardlol on 2016/12/3.
  */
 public class SimHashStep1Mapper extends Mapper<Text, Text, LongWritable, Text> {

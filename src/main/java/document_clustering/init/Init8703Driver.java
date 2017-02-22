@@ -1,6 +1,5 @@
 package document_clustering.init;
 
-import document_clustering.deprecated.Init8703Mapper2;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -47,7 +46,7 @@ public class Init8703Driver extends Configured implements Tool {
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
 
-        job.setMapperClass(Init8703Mapper.class);
+        job.setMapperClass(Init8703Mapper2.class);
 
         job.setNumReduceTasks(0);
         job.setOutputKeyClass(Text.class);

@@ -7,6 +7,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 
 /**
+ * take one comodity out of every group
+ * <p>
  * Created by edwardlol on 2016/12/3.
  */
 public class SimHashStep2Reducer extends Reducer<IntWritable, Text, IntWritable, Text> {
@@ -25,7 +27,7 @@ public class SimHashStep2Reducer extends Reducer<IntWritable, Text, IntWritable,
             throws IOException, InterruptedException {
 
         Text main = values.iterator().next();
-
+        // id, entry_id@@g_no::g_name##g_model
         context.write(key, main);
     }
 }

@@ -1,4 +1,4 @@
-package document_clustering.deprecated;
+package document_clustering.init;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import document_clustering.util.JiebaFactory;
@@ -46,7 +46,7 @@ public class Init8703Mapper2 extends Mapper<LongWritable, Text, Text, Text> {
         Version ver = Version.LUCENE_46;
         Map<String, String> filterArgs = new HashMap<>();
         filterArgs.put("luceneMatchVersion", ver.toString());
-        filterArgs.put("synonyms", "./data/synonyms.txt");
+        filterArgs.put("synonyms", "./dicts/synonymsLuc.dic");
         filterArgs.put("expand", "true");
         synonymFilterFactory = new SynonymFilterFactory(filterArgs);
         synonymFilterFactory.inform(new FilesystemResourceLoader());
@@ -97,7 +97,7 @@ public class Init8703Mapper2 extends Mapper<LongWritable, Text, Text, Text> {
         List<String> terms = jieba.seperate(sentence, JiebaSegmenter.SegMode.SEARCH);
         if (terms.size() > 0) {
             for (String term : terms) {
-                stringBuilder.append(term);
+                stringBuilder.append(term).append(' ');
             }
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             return stringBuilder.toString();

@@ -1,17 +1,16 @@
 package document_clustering.init;
 
-import com.huaban.analysis.jieba.JiebaSegmenter;
-import document_clustering.util.JiebaFactory;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
+ * init 0901 comodity with ansj
  * Created by edwardlol on 2016/12/3.
  */
 public class Init0901Mapper extends Mapper<LongWritable, Text, Text, Text> {
@@ -21,19 +20,22 @@ public class Init0901Mapper extends Mapper<LongWritable, Text, Text, Text> {
 
     private Text outputValue = new Text();
 
-    private JiebaFactory jieba;
+    private Map<Pattern, String> synonymsMap = new HashMap<>();
+
+    private StringBuilder stringBuilder = new StringBuilder();
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        Configuration conf = context.getConfiguration();
-        String dictpath = conf.get("dict.path");
-        jieba = JiebaFactory.getInstance(dictpath);
+        this.synonymsMap.put(Pattern.compile("阿拉[比毕][加卡]"), "阿拉比卡");
+        this.synonymsMap.put(Pattern.compile("罗[布巴伯]斯[特塔]"), "罗布斯塔");
+        this.synonymsMap.put(Pattern.compile("[培烘]炒"), "焙炒");
+        this.synonymsMap.put(Pattern.compile("烘培"), "焙炒");
+        this.synonymsMap.put(Pattern.compile("寝除"), "浸除");
     }
 
     /**
-     *
      * @param key     position
      * @param value   entry_id@@g_no@@code_ts@@decl_port@@g_name@@[g_model]
      * @param context
@@ -44,42 +46,34 @@ public class Init0901Mapper extends Mapper<LongWritable, Text, Text, Text> {
     protected void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
 
-        String[] contents = value.toString().replaceAll("阿拉比加", "阿拉比卡")
-                .replaceAll("罗[布巴伯]斯[特塔]", "罗布斯塔")
-                .replaceAll("[培烘]炒", "焙炒")
-                .split("@@");
+        String[] contents = replaceSynonyms(value.toString()).split("@@");
 
         this.outputKey.set(contents[0] + "@@" + contents[1]);
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder = append(stringBuilder, contents[4]);
-        stringBuilder.append("##");
+        this.stringBuilder.setLength(0);
+        this.stringBuilder = SepUtils.appendByAnsj(this.stringBuilder, contents[4]).append("##");
+        // TODO: 17-2-22 make this a choice
+//        this.stringBuilder = SepUtils.appendByJieba(this.stringBuilder, contents[4]).append("##");
 
         if (contents.length == 6) {
-            stringBuilder = append(stringBuilder, contents[5]);
+            this.stringBuilder = SepUtils.appendByAnsj(this.stringBuilder, contents[5]);
+            //        this.stringBuilder = SepUtils.appendByJieba(this.stringBuilder, contents[5]);
         }
-        this.outputValue.set(stringBuilder.toString());
+        this.outputValue.set(this.stringBuilder.toString());
         context.write(this.outputKey, this.outputValue);
-
     }
 
+
     /**
-     * append the seperate result to the StringBuilder
-     *
-     * @param stringBuilder stringBuilder to append to
-     * @param sentence      sentence to be seperated
-     * @return stringBuilder
+     * @param origin
+     * @return
      */
-    private StringBuilder append(StringBuilder stringBuilder, String sentence) {
-        List<String> terms = jieba.seperate(sentence, JiebaSegmenter.SegMode.SEARCH);
-        Iterator<String> iterator = terms.iterator();
-        while (iterator.hasNext()) {
-            stringBuilder.append(iterator.next());
-            if (iterator.hasNext()) {
-                stringBuilder.append(" ");
-            }
+    private String replaceSynonyms(String origin) {
+        String result = origin;
+        for (Map.Entry<Pattern, String> entry : this.synonymsMap.entrySet()) {
+            result = entry.getKey().matcher(result).replaceAll(entry.getValue());
         }
-        return stringBuilder;
+        return result;
     }
 }
 

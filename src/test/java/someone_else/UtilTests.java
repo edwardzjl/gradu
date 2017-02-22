@@ -59,7 +59,7 @@ public class UtilTests {
             Version ver = Version.LUCENE_46;
             Map<String, String> filterArgs = new HashMap<>();
             filterArgs.put("luceneMatchVersion", ver.toString());
-            filterArgs.put("synonyms", "./data/synonyms.txt");
+            filterArgs.put("synonyms", "./data/synonyms.dic");
             filterArgs.put("expand", "true");
             SynonymFilterFactory factory = new SynonymFilterFactory(filterArgs);
             factory.inform(new FilesystemResourceLoader());

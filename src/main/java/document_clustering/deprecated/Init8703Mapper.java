@@ -1,11 +1,16 @@
-package document_clustering.init;
+package document_clustering.deprecated;
 
+import com.huaban.analysis.jieba.JiebaSegmenter;
+import document_clustering.util.JiebaFactory;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -19,6 +24,8 @@ public class Init8703Mapper extends Mapper<LongWritable, Text, Text, Text> {
 
     private Text outputValue = new Text();
 
+    private JiebaFactory jieba;
+
     private Map<Pattern, String> synonymsMap = new HashMap<>();
 
     private StringBuilder stringBuilder = new StringBuilder();
@@ -27,6 +34,10 @@ public class Init8703Mapper extends Mapper<LongWritable, Text, Text, Text> {
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
+        Configuration conf = context.getConfiguration();
+        String dictpath = conf.get("dict.path");
+        jieba = JiebaFactory.getInstance(dictpath);
+
         synonymsMap.put(Pattern.compile("5座"), "五座");
         synonymsMap.put(Pattern.compile("7座"), "七座");
         synonymsMap.put(Pattern.compile("不是"), "非");
@@ -52,6 +63,7 @@ public class Init8703Mapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     /**
+     *
      * @param key     position
      * @param value   entry_id \t g_no \t code_ts \t g_name \t country \t g_name@@[g_model]
      * @param context
@@ -63,34 +75,47 @@ public class Init8703Mapper extends Mapper<LongWritable, Text, Text, Text> {
             throws IOException, InterruptedException {
 
         String[] contents = value.toString().split("\t");
-        String[] nameAndModel = replaceSynonyms(contents[5]).split("@@");
 
-        this.stringBuilder.setLength(0);
-        this.stringBuilder = SepUtils.appendByAnsj(this.stringBuilder, nameAndModel[0]).append("##");
-        // TODO: 17-2-22 make this a choice
-//        this.stringBuilder = SepUtils.appendByJieba(this.stringBuilder, nameAndModel[0]).append("##");
+        String[] nameAndModel = replaceSyno(contents[5]).split("@@");
+
+        stringBuilder.setLength(0);
+
+        stringBuilder = append(stringBuilder, nameAndModel[0]).append("##");
+
         if (nameAndModel.length == 2) {
-            this.stringBuilder = SepUtils.appendByAnsj(this.stringBuilder, nameAndModel[1]);
-//            this.stringBuilder = SepUtils.appendByJieba(this.stringBuilder, nameAndModel[1]);
+            stringBuilder = append(stringBuilder, nameAndModel[1]);
         }
 
         this.outputKey.set(contents[0] + "@@" + contents[1]);
-        this.outputValue.set(this.stringBuilder.toString());
+        this.outputValue.set(stringBuilder.toString());
         context.write(this.outputKey, this.outputValue);
     }
 
 
-    /**
-     * @param origin
-     * @return
-     */
-    private String replaceSynonyms(String origin) {
-        String result = origin;
+    private String replaceSyno(String term) {
+        String result = term;
         for (Map.Entry<Pattern, String> entry : this.synonymsMap.entrySet()) {
             result = entry.getKey().matcher(result).replaceAll(entry.getValue());
         }
         return result;
     }
+
+    /**
+     * append the seperate result to the StringBuilder
+     *
+     * @param sentence      sentence to be seperated
+     * @return stringBuilder
+     */
+    private StringBuilder append(StringBuilder stringBuilder, String sentence) {
+        List<String> terms = jieba.seperate(sentence, JiebaSegmenter.SegMode.SEARCH);
+        if (terms.size() > 0) {
+            for (String term : terms) {
+                stringBuilder.append(term).append(' ');
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        }
+        return stringBuilder;
+    }
 }
 
-// End Init8703Mapper.java
+// End Init0901Mapper.java
