@@ -1,7 +1,7 @@
 package deprecated;
 
 import document_clustering.util.CollectionUtil;
-import document_clustering.util.SimHash;
+import document_clustering.simhash.SimHash;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;

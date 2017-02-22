@@ -1,4 +1,4 @@
-package document_clustering.util;
+package document_clustering.simhash;
 
 
 import net.openhft.hashing.LongHashFunction;
@@ -19,10 +19,19 @@ public class SimHash {
 
     //~ Constructors -----------------------------------------------------------
 
+    /**
+     * init a simhash instance of the token using 64 bit length as default
+     * @param tokens
+     */
     public SimHash(String tokens) {
         this(tokens, 64);
     }
 
+    /**
+     * main constructor
+     * @param tokens
+     * @param hashbits
+     */
     public SimHash(String tokens, int hashbits) {
         this.tokens = tokens;
         this.hashbits = hashbits;
@@ -50,10 +59,21 @@ public class SimHash {
         this.hashCode = fingerprint;
     }
 
+    /**
+     *
+     * @param tokens
+     * @param hashCode
+     */
     public SimHash(String tokens, long hashCode) {
         this(tokens, hashCode, 64);
     }
 
+    /**
+     *
+     * @param tokens
+     * @param hashCode
+     * @param hashbits
+     */
     public SimHash(String tokens, long hashCode, int hashbits) {
         this.tokens = tokens;
         this.hashCode = hashCode;
@@ -62,6 +82,12 @@ public class SimHash {
 
     //~ Methods ----------------------------------------------------------------
 
+    /**
+     * calculate the hamming distance of the two input hashcode
+     * @param hash1 hash1
+     * @param hash2 hash2
+     * @return the hamming distance of the two input hashcode
+     */
     public static int hammingDistance(long hash1, long hash2) {
         return Long.bitCount(hash1 ^ hash2);
     }

@@ -1,6 +1,5 @@
 package document_clustering.simhash;
 
-import document_clustering.util.SimHash;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;

@@ -154,7 +154,7 @@ public class TF_IDF_Driver extends Configured implements Tool {
         SequenceFileInputFormat.addInputPath(job3, step2_outputDir);
         job3.setInputFormatClass(SequenceFileAsTextInputFormat.class);
 
-//        job3.setMapperClass(TF_IDF_Mapper.class);
+//        job3.setMapperClass(F_IDF_Mapper.class);
 //        job3.setMapOutputKeyClass(Text.class);
 //        job3.setMapOutputValueClass(Text.class);
 

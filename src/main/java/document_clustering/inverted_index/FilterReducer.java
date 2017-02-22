@@ -56,7 +56,7 @@ public class FilterReducer extends Reducer<IntWritable, Text, Text, Text> {
     public void reduce(IntWritable key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
 
-        // TODO: 17-2-22 should be total docs * 0.99
+        // TODO: 17-2-22 seems not right
         if (count.get() < totalTerms * 0.99) {
 
             for (Text value : values) {
