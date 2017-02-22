@@ -38,7 +38,7 @@ public class TF_IDF_Driver extends Configured implements Tool {
         Path docCntDir = new Path(args[1] + "/docCount");
         Path step1_outputDir = new Path(args[1] + "/step1");
         Path step2_outputDir = new Path(args[1] + "/step2");
-        Path step3_outputDir = new Path(args[1] + "/step3");
+        Path step3_outputDir = new Path(args[1] + "/result");
 
         Configuration conf = getConf();
         if (conf == null) {
@@ -169,33 +169,10 @@ public class TF_IDF_Driver extends Configured implements Tool {
 
         jobControl.addJob(controlledJob3);
 
-        /* step4, normalizer the documents so the lenth
-        of their vector equals to 1 */
-
-        Job job4 = Job.getInstance(conf, "tf idf normalizer job");
-        job4.setJarByClass(NormalizerMapper.class);
-
-        FileInputFormat.addInputPath(job4, step3_outputDir);
-        job4.setInputFormatClass(KeyValueTextInputFormat.class);
-
-        job4.setMapperClass(NormalizerMapper.class);
-
-        job4.setReducerClass(NormalizerReducer.class);
-        job4.setOutputKeyClass(Text.class);
-        job4.setOutputValueClass(Text.class);
-
-        FileOutputFormat.setOutputPath(job4, new Path(args[1] + "/result"));
-
-        ControlledJob controlledJob4 = new ControlledJob(conf);
-        controlledJob4.setJob(job4);
-        controlledJob4.addDependingJob(controlledJob3);
-
-        jobControl.addJob(controlledJob4);
-
         // run jobs
         runJobs(jobControl);
 
-        return job4.waitForCompletion(true) ? 0 : 1;
+        return job3.waitForCompletion(true) ? 0 : 1;
     }
 
     private void runJobs(JobControl jobControl) {

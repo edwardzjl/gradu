@@ -1,4 +1,4 @@
-package document_clustering.inverted_index;
+package document_clustering.deprecated;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;

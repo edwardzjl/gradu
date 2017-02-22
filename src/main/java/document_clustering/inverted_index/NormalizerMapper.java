@@ -1,6 +1,5 @@
-package document_clustering.tf_idf;
+package document_clustering.inverted_index;
 
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -34,14 +33,12 @@ public class NormalizerMapper extends Mapper<Text, Text, Text, Text> {
         double tf_idf = Double.valueOf(value.toString());
 
         // filter stop words
-        if (tf_idf > 0.01) {
-            // id@@g_no@@line_no
-            this.outputKey.set(termAndId[1]);
-            // term=tf_idf
-            this.outputValue.set(termAndId[0] + "=" + tf_idf);
-
-            context.write(this.outputKey, this.outputValue);
-        }
+//        if (tf_idf > 0.01) {
+        this.outputKey.set(termAndId[1]);
+        this.outputValue.set(termAndId[0] + "=" + tf_idf);
+        // entry_id@@g_no@@group_id \t term=tf_idf
+        context.write(this.outputKey, this.outputValue);
+//        }
     }
 }
 

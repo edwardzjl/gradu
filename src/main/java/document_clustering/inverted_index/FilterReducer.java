@@ -1,6 +1,5 @@
 package document_clustering.inverted_index;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -26,21 +25,20 @@ public class FilterReducer extends Reducer<IntWritable, Text, Text, Text> {
 
     private Text outputValue = new Text();
 
-    private int lineCnt;
+    private int totalTerms;
 
     //~ Methods ----------------------------------------------------------------
-
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         if (context.getCacheFiles() != null
                 && context.getCacheFiles().length > 0) {
 
-            FileReader fileReader = new FileReader("./lineCnt");
+            FileReader fileReader = new FileReader("./totalTerms");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
             String line = bufferedReader.readLine();
-            this.lineCnt = Integer.parseInt(line);
+            this.totalTerms = Integer.parseInt(line);
 
             bufferedReader.close();
             fileReader.close();
@@ -48,8 +46,8 @@ public class FilterReducer extends Reducer<IntWritable, Text, Text, Text> {
     }
 
     /**
-     * @param key     cnt
-     * @param values  term@@line_no=tf-idf
+     * @param key     appear_times
+     * @param values  term@@line_no=tf-idf,...
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -58,7 +56,8 @@ public class FilterReducer extends Reducer<IntWritable, Text, Text, Text> {
     public void reduce(IntWritable key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
 
-        if (count.get() < lineCnt * 0.99) {
+        // TODO: 17-2-22 should be total docs * 0.99
+        if (count.get() < totalTerms * 0.99) {
 
             for (Text value : values) {
                 String[] content = value.toString().split("@@");

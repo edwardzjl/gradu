@@ -1,21 +1,19 @@
 package document_clustering.inverted_index;
 
-import document_clustering.tf_idf.*;
 import document_clustering.util.LineCountMapper;
 import document_clustering.util.LineCountReducer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.*;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsTextInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;
 import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
@@ -30,13 +28,12 @@ public class FilterDriver extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         if (args.length < 2) {
-            System.err.printf("usage: %s simhash_result_dir output_dir " +
-                            "[gname_weight] [compress_or_not]\n",
+            System.err.printf("usage: %s inverted_index_result_dir output_dir\n",
                     getClass().getSimpleName());
             System.exit(1);
         }
 
-        Path lineCntDir = new Path(args[1] + "/lineCount");
+        Path lineCntDir = new Path(args[1] + "/totalTerms");
 
         Configuration conf = getConf();
         if (conf == null) {
@@ -52,12 +49,11 @@ public class FilterDriver extends Configured implements Tool {
 
         JobControl jobControl = new JobControl("iindex filter jobs");
 
-        // pre step configuration
-        Job cntJob = Job.getInstance(conf, "line count step");
+        // step 1, count all terms in this corpus
+        Job cntJob = Job.getInstance(conf, "term count step");
         cntJob.setJarByClass(FilterDriver.class);
 
         FileInputFormat.addInputPath(cntJob, new Path(args[0]));
-        FileOutputFormat.setOutputPath(cntJob, lineCntDir);
 
         cntJob.setMapperClass(LineCountMapper.class);
         cntJob.setCombinerClass(LineCountReducer.class);
@@ -66,16 +62,18 @@ public class FilterDriver extends Configured implements Tool {
         cntJob.setOutputKeyClass(NullWritable.class);
         cntJob.setOutputValueClass(IntWritable.class);
 
+        FileOutputFormat.setOutputPath(cntJob, lineCntDir);
+
         ControlledJob controlledPreJob = new ControlledJob(conf);
         controlledPreJob.setJob(cntJob);
         jobControl.addJob(controlledPreJob);
 
-        // step 1 configuration
-        Job job1 = Job.getInstance(conf, "tf idf step1 job");
+        // step 2 configuration
+        Job job1 = Job.getInstance(conf, "filter job");
         job1.setJarByClass(FilterDriver.class);
 
         FileInputFormat.addInputPath(job1, new Path(args[0]));
-        job1.addCacheFile(new URI(lineCntDir + "/part-r-00000#lineCnt"));
+        job1.addCacheFile(new URI(lineCntDir + "/part-r-00000#totalTerms"));
         job1.setInputFormatClass(KeyValueTextInputFormat.class);
 
         job1.setMapperClass(FilterMapper.class);

@@ -23,7 +23,7 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
 
     /**
      * @param key     term
-     * @param values  line_no=tf-idf
+     * @param values  group_id=tf-idf
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -35,8 +35,9 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
         this.stringBuilder.setLength(0);
 
         for (Text value : values) {
-            String[] lnoAndTFIDF = value.toString().split("=");
-            if (Double.valueOf(lnoAndTFIDF[1]) > 0.1d) {
+            String[] idAndTFIDF = value.toString().split("=");
+            // filter the small tf_idfs
+            if (Double.valueOf(idAndTFIDF[1]) > 0.1d) {
                 this.stringBuilder.append(value).append(',');
             }
         }

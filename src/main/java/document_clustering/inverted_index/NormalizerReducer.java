@@ -1,4 +1,4 @@
-package document_clustering.tf_idf;
+package document_clustering.inverted_index;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -41,16 +41,16 @@ public class NormalizerReducer extends Reducer<Text, Text, Text, Text> {
         for (double tf_idf : this.tf_idfs.values()) {
             sum += Math.pow(tf_idf, 2);
         }
-        final double _sum = Math.sqrt(sum);
+        final double sq_sum = Math.sqrt(sum);
 
-        this.tf_idfs.replaceAll((k, v) -> v / _sum);
+        this.tf_idfs.replaceAll((k, v) -> v / sq_sum);
 
         for (Map.Entry<String, Double> entry : this.tf_idfs.entrySet()) {
-            String term = entry.getKey();
-            Double tf_idf = entry.getValue();
-            this.outputKey.set(term + "@@@" + key.toString());
-            this.outputValue.set(tf_idf.toString());
-            // term@@@entry_id@@g_no@@group_id \t tf_idf
+            String[] id = key.toString().split("@@");
+
+            this.outputKey.set(entry.getKey());
+            this.outputValue.set(id[2] + "=" + entry.getValue().toString());
+            // term \t group_id=normalized_tf_idf
             context.write(this.outputKey, this.outputValue);
         }
     }

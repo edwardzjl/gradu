@@ -22,7 +22,7 @@ public class FilterMapper extends Mapper<Text, Text, IntWritable, Text> {
 
     /**
      * @param key     term
-     * @param value   line_no=tf-idf,...
+     * @param value   group_id=tf-idf,...
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -35,7 +35,7 @@ public class FilterMapper extends Mapper<Text, Text, IntWritable, Text> {
 
         this.outputKey.set(cnt);
         this.outputValue.set(key.toString() + "@@" + value.toString());
-        // cnt \t term@@line_no=tf-idf,...
+        // appear_times \t term@@group_id=tf-idf,...
         context.write(this.outputKey, this.outputValue);
     }
 }
