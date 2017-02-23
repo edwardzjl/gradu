@@ -26,7 +26,6 @@ public class IntIntTupleWritable extends TupleWritable<IntWritable, IntWritable>
     }
     //~ Methods ----------------------------------------------------------------
 
-
     @Override
     public boolean equals(Object that) {
         if (!(that instanceof IntIntTupleWritable)) {
@@ -47,6 +46,10 @@ public class IntIntTupleWritable extends TupleWritable<IntWritable, IntWritable>
         return result;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
     public void set(IntWritable left, IntWritable right) {
         this.left.set(left.get());

@@ -13,7 +13,7 @@ import java.io.IOException;
  * if the index is short, just send it to a container and the container will do a self join.
  * if the index is long, I first devide it into splitNum splits.
  * there are two strategies.
- *
+ * <p>
  * <p>
  * Created by edwardlol on 2016/12/2.
  */
@@ -39,9 +39,16 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
      */
     private int reduceNum;
 
+    /**
+     * the number of splits to divide a long index into
+     */
     private int splitNum;
 
-    private int longThreshold;
+    /**
+     * threshold of index length to determine
+     * whether to divide an index or not
+     */
+    private int lengthThreshold;
 
     private StringBuilder sb1 = new StringBuilder();
 
@@ -52,7 +59,7 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
         Configuration conf = context.getConfiguration();
         this.reduceNum = conf.getInt("reducer.num", 5);
         this.splitNum = conf.getInt("split.num", 6);
-        this.longThreshold = conf.getInt("long.threshold", 1000);
+        this.lengthThreshold = conf.getInt("long.threshold", 1000);
     }
 
     /**
@@ -71,7 +78,7 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
 
         String[] docs = value.toString().split(",");
 
-        if (docs.length > this.longThreshold) {
+        if (docs.length > this.lengthThreshold) {
             /* set the length of each container */
             int docsInSeg = docs.length / this.splitNum;
             if (docs.length % this.splitNum != 0) {

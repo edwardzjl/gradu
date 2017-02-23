@@ -1,4 +1,4 @@
-package document_clustering.similarity;
+package document_clustering.similarity.deprecated;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;

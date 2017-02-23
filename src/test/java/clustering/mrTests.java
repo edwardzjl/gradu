@@ -5,10 +5,6 @@ import document_clustering.deprecated.MergeDriver;
 import document_clustering.deprecated.OneNodeSimilarityDriver;
 import document_clustering.deprecated.SplitedSimilarityDriver;
 import document_clustering.deprecated.VectorDriver;
-import document_clustering.init.Init0901Driver;
-import document_clustering.init.Init8703Driver;
-import document_clustering.inverted_index.FilterDriver;
-import document_clustering.inverted_index.InvertedIndexDriver;
 import document_clustering.linkback.LastStepDriver;
 import document_clustering.linkback.ProcessClusterDriver;
 import document_clustering.linkback.Step1Driver;
@@ -20,8 +16,6 @@ import document_clustering.mst.MSTTestDriver2;
 import document_clustering.simhash.SimHashDriver;
 import document_clustering.similarity.ISimDriver;
 import document_clustering.deprecated.InvertedSimilarityDriver;
-import document_clustering.similarity.PreDriver;
-import document_clustering.tf_idf.TF_IDF_Driver;
 import org.junit.Ignore;
 import org.junit.Test;
 import partition_test.pDriver;
@@ -44,23 +38,6 @@ public class mrTests {
         }
     }
 
-
-
-
-
-    @Test
-    public void isim() {
-        ISimDriver driver = new ISimDriver();
-        String[] args = new String[3];
-        args[0] = "/final/bench/pre";
-        args[1] = "/final/bench/isim";
-        args[2] = "0";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     // my mst
     @Test
@@ -158,6 +135,11 @@ public class mrTests {
             e.printStackTrace();
         }
     }
+
+
+
+
+
 
 
     // their
@@ -291,21 +273,4 @@ public class mrTests {
         }
     }
 
-    /**
-     * use simhash to detect duplicate records
-     */
-    @Deprecated
-    @Ignore
-    @Test
-    public void simHash_old() {
-        SimHashDriver driver = new SimHashDriver();
-        String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/init/out/0901";
-        args[1] = "/user/edwardlol/final/simhash/0901";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

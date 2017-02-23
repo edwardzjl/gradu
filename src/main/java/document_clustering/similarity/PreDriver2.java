@@ -1,10 +1,10 @@
 package document_clustering.similarity;
 
+import document_clustering.similarity.deprecated.PreMapper;
 import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -55,7 +55,7 @@ public class PreDriver2 extends Configured implements Tool {
         conf.setInt("split.num", 6);
 
         Job job = Job.getInstance(conf, "pre job");
-        job.setJarByClass(PreMapper.class);
+        job.setJarByClass(PreDriver2.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
 
@@ -96,4 +96,4 @@ public class PreDriver2 extends Configured implements Tool {
     }
 }
 
-// End PreDriver.java
+// End PreDriver2.java
