@@ -27,7 +27,7 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
 
     private int longThreshold;
 
-    private DecimalFormat decimalFormat = new DecimalFormat( "0.0000");
+    private StringBuilder stringBuilder = new StringBuilder();
 
     //~ Methods ----------------------------------------------------------------
 
@@ -60,10 +60,9 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
             }
 
             for (int i = 0; i < this.splitNum - 1; i++) {
-                StringBuilder output = new StringBuilder();
+                this.stringBuilder.setLength(0);
                 for (int a = 0; a < docsInSeg; a++) {
-                    // TODO: 17-2-22 make the content shorter
-                    output.append(docs[i * docsInSeg + a]).append(',');
+                    this.stringBuilder.append(docs[i * docsInSeg + a]).append(',');
                 }
                 for (int j = i + 1; j < this.splitNum; j++) {
                     for (int b = 0; b < docsInSeg; b++) {
@@ -71,22 +70,22 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
                         if (index >= docs.length) {
                             break;
                         }
-                        output.append(docs[index]).append(',');
+                        this.stringBuilder.append(docs[index]).append(',');
                     }
                     this.outputKey.set(this.bigIndex++);
                     this.outputValue.set(key.toString() + ":"
-                            + output.deleteCharAt(output.length() - 1).toString());
-                    // container \t term:doc_line_no=tf-idf,...
+                            + this.stringBuilder.deleteCharAt(this.stringBuilder.length() - 1).toString());
+                    // container_id \t term:group_id=tf-idf,...
                     context.write(this.outputKey, this.outputValue);
-                    bigIndex = bigIndex % this.reduceNum;
+                    this.bigIndex = this.bigIndex % this.reduceNum;
                 }
             }
         } else if (docs.length > 1) {
             this.outputKey.set(smallIndex++);
             this.outputValue.set(key.toString() + ":" + value.toString());
-            // container \t term:doc_line_no=tf-idf,...
+            // container_id \t term:group_id=tf-idf,...
             context.write(this.outputKey, this.outputValue);
-            smallIndex = smallIndex % this.reduceNum;
+            this.smallIndex = this.smallIndex % this.reduceNum;
         }
     }
 }
