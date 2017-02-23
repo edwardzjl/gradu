@@ -21,7 +21,7 @@ public class SimHashStep1Reducer extends Reducer<LongWritable, Text, IntWritable
     //~ Static fields/initializers ---------------------------------------------
 
     /**
-     * used to initialize ids
+     * used to initialize document ids
      */
     protected static final AtomicInteger count = new AtomicInteger(0);
 

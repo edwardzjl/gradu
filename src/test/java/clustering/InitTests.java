@@ -17,8 +17,8 @@ public class InitTests {
     public void init0901Test() {
         Init0901Driver driver = new Init0901Driver();
         String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/init/in/0901";
-        args[1] = "/user/edwardlol/final/init/out/0901";
+        args[0] = "/final/init/in/0901";
+        args[1] = "/final/init/out/0901";
         try {
             driver.run(args);
         } catch (Exception e) {

@@ -1,5 +1,7 @@
-package document_clustering.inverted_index;
+package document_clustering.deprecated;
 
+import document_clustering.inverted_index.NormalizerMapper;
+import document_clustering.inverted_index.NormalizerReducer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;

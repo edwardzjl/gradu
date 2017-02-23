@@ -1,5 +1,6 @@
 package document_clustering.similarity;
 
+import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -17,7 +18,7 @@ import org.apache.hadoop.util.ToolRunner;
 /**
  * Created by edwardlol on 2016/12/2.
  */
-public class PreDriver extends Configured implements Tool {
+public class PreDriver2 extends Configured implements Tool {
     //~  Methods ---------------------------------------------------------------
 
     @Override
@@ -51,7 +52,7 @@ public class PreDriver extends Configured implements Tool {
 
         conf.setInt("reducer.num", 15);
 
-        conf.setInt("split.num", 10);
+        conf.setInt("split.num", 6);
 
         Job job = Job.getInstance(conf, "pre job");
         job.setJarByClass(PreMapper.class);
@@ -60,12 +61,12 @@ public class PreDriver extends Configured implements Tool {
 
         job.setInputFormatClass(KeyValueTextInputFormat.class);
 
-        job.setMapperClass(PreMapper.class);
-        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapperClass(PreMapper2.class);
+        job.setMapOutputKeyClass(IntIntTupleWritable.class);
         job.setMapOutputValueClass(Text.class);
 
         job.setNumReduceTasks(conf.getInt("reducer.num", 15));
-        job.setReducerClass(PreReducer.class);
+        job.setReducerClass(PreReducer2.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
@@ -91,7 +92,7 @@ public class PreDriver extends Configured implements Tool {
 
     public static void main(String[] args) throws Exception {
         Configuration configuration = new Configuration();
-        System.exit(ToolRunner.run(configuration, new PreDriver(), args));
+        System.exit(ToolRunner.run(configuration, new PreDriver2(), args));
     }
 }
 

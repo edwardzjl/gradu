@@ -18,8 +18,8 @@ public class PreReducer extends Reducer<IntWritable, Text, Text, Text> {
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     meaningless
-     * @param values  term:docId=TF-IDF,docId=TF-IDF...
+     * @param key     container_id, meaningless
+     * @param values  term_id:docId=TF-IDF,docId=TF-IDF...
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -32,25 +32,23 @@ public class PreReducer extends Reducer<IntWritable, Text, Text, Text> {
             String[] line = value.toString().split(":");
 
             String[] contents = line[1].split(",");
-            if (contents.length > 1) {
-                for (int i = 0; i < contents.length; i++) {
-                    for (int j = i + 1; j < contents.length; j++) {
-                        String[] idAndWeight1 = contents[i].split("=");
-                        String[] idAndWeight2 = contents[j].split("=");
-                        if (Integer.valueOf(idAndWeight1[0]) > Integer.valueOf(idAndWeight2[0])) {
-                            this.outputKey.set(idAndWeight2[0] + "," + idAndWeight1[0]);
-                        } else {
-                            this.outputKey.set(idAndWeight1[0] + "," + idAndWeight2[0]);
-                        }
-
-                        String out = format(Double.valueOf(idAndWeight1[1]) * Double.valueOf(idAndWeight2[1]));
-                        this.outputValue.set(line[0] + ":" + out);
-//                        this.outputValue.set(line[0] + ":" + idAndWeight1[1] + "*" + idAndWeight2[1]);
-                        // doc1,doc2 \t term:sim
-//                      this.outputValue.set(line[0] + ":" + (Double.valueOf(idAndWeight1[1]) * Double.valueOf(idAndWeight2[1])));
-                        // doc1,doc2 \t term:w1*w2
-                        context.write(this.outputKey, this.outputValue);
+            if (contents.length < 2) {
+                continue;
+            }
+            for (int i = 0; i < contents.length; i++) {
+                for (int j = i + 1; j < contents.length; j++) {
+                    String[] idAndWeighti = contents[i].split("=");
+                    String[] idAndWeightj = contents[j].split("=");
+                    if (Integer.valueOf(idAndWeighti[0]) > Integer.valueOf(idAndWeightj[0])) {
+                        this.outputKey.set(idAndWeightj[0] + "," + idAndWeighti[0]);
+                    } else {
+                        this.outputKey.set(idAndWeighti[0] + "," + idAndWeightj[0]);
                     }
+
+                    String out = format(Double.valueOf(idAndWeighti[1]) * Double.valueOf(idAndWeightj[1]));
+                    this.outputValue.set(line[0] + ":" + out);
+                    // doc1,doc2 \t term:sim
+                    context.write(this.outputKey, this.outputValue);
                 }
             }
         }
@@ -61,4 +59,4 @@ public class PreReducer extends Reducer<IntWritable, Text, Text, Text> {
     }
 }
 
-// End InvertedSimilarityReducer.java
+// End PreReducer.java

@@ -46,19 +46,7 @@ public class mrTests {
 
 
 
-    @Test
-    public void preTest() {
-        PreDriver driver = new PreDriver();
-        String[] args = new String[3];
-        args[0] = "/final/bench/filtered_iindex/result";
-        args[1] = "/final/bench/pre";
-        args[2] = "0";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     @Test
     public void isim() {

@@ -1,6 +1,7 @@
 package document_clustering.inverted_index;
 
 import document_clustering.deprecated.InvertedIndexMapper;
+import document_clustering.util.Util;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -9,6 +10,8 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;
+import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -26,9 +29,13 @@ public class InvertedIndexDriver extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         if (args.length != 2) {
-            System.err.printf("usage: %s tf_idf_result_dir output_dir\n", getClass().getSimpleName());
+            System.err.printf("usage: %s tf_idf_result_dir output_dir\n",
+                    getClass().getSimpleName());
             System.exit(1);
         }
+
+        Path normDir = new Path(args[1] + "/normed");
+        Path resultDir = new Path(args[1] + "/result");
 
         Configuration conf = getConf();
         if (conf == null) {
@@ -42,27 +49,53 @@ public class InvertedIndexDriver extends Configured implements Tool {
             );
         }
 
-        Job job = Job.getInstance(conf, "inverted index job");
-        job.setJobName("inverted index job");
-        job.setJarByClass(InvertedIndexMapper.class);
+        JobControl jobControl = new JobControl("inverted-index jobs");
 
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        /* step 1, normalize the vector lenth of each document */
 
-        job.setInputFormatClass(KeyValueTextInputFormat.class);
+        Job job1 = Job.getInstance(conf, "tf idf normalizer job");
+        job1.setJarByClass(NormalizerMapper.class);
 
-        job.setMapperClass(Mapper.class);
+        FileInputFormat.addInputPath(job1, new Path(args[0]));
+        job1.setInputFormatClass(KeyValueTextInputFormat.class);
 
-        job.setReducerClass(InvertedIndexReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        job1.setMapperClass(NormalizerMapper.class);
 
-        long starttime = System.currentTimeMillis();
-        boolean complete = job.waitForCompletion(true);
-        long endtime = System.currentTimeMillis();
-        System.out.println("inverted index job finished in: " + (endtime - starttime) / 1000 + " seconds");
+        job1.setReducerClass(NormalizerReducer.class);
+        job1.setOutputKeyClass(Text.class);
+        job1.setOutputValueClass(Text.class);
 
-        return complete ? 0 : 1;
+        FileOutputFormat.setOutputPath(job1, normDir);
+
+        ControlledJob controlledJob1 = new ControlledJob(conf);
+        controlledJob1.setJob(job1);
+        jobControl.addJob(controlledJob1);
+
+        /* step 2, calculate inverted index */
+
+        Job job2 = Job.getInstance(conf, "inverted index job");
+        job2.setJarByClass(InvertedIndexMapper.class);
+
+        FileInputFormat.addInputPath(job2, normDir);
+
+        job2.setInputFormatClass(KeyValueTextInputFormat.class);
+
+        job2.setMapperClass(Mapper.class);
+
+        job2.setReducerClass(InvertedIndexReducer.class);
+        job2.setOutputKeyClass(Text.class);
+        job2.setOutputValueClass(Text.class);
+
+        FileOutputFormat.setOutputPath(job2, resultDir);
+
+        ControlledJob controlledJob2 = new ControlledJob(conf);
+        controlledJob2.setJob(job2);
+        controlledJob2.addDependingJob(controlledJob1);
+        jobControl.addJob(controlledJob2);
+
+        Util.runJobs(jobControl);
+
+        return job2.waitForCompletion(true) ? 0 : 1;
     }
 
     //~  Entrance --------------------------------------------------------------

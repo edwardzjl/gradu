@@ -2,26 +2,12 @@ package clustering;
 
 import document_clustering.inverted_index.FilterDriver;
 import document_clustering.inverted_index.InvertedIndexDriver;
-import document_clustering.inverted_index.NormalizerDriver;
 import org.junit.Test;
 
 /**
  * Created by edwardlol on 17-2-22.
  */
 public class InvertedIndexTests {
-
-    @Test
-    public void normalizerTest() {
-        NormalizerDriver driver = new NormalizerDriver();
-        String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/tf_idf/0901/result";
-        args[1] = "/user/edwardlol/final/normalizedTF_IDF";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * read the big document file and calculate the inverted index
@@ -32,8 +18,8 @@ public class InvertedIndexTests {
     public void invertedIndexTest() {
         InvertedIndexDriver driver = new InvertedIndexDriver();
         String[] args = new String[2];
-        args[0] = "/user/edwardlol/final/normalizedTF_IDF";
-        args[1] = "/user/edwardlol/final/invertedIndex2";
+        args[0] = "/final/tf_idf/0901/result";
+        args[1] = "/final/iindex/0901_id";
         try {
             driver.run(args);
         } catch (Exception e) {

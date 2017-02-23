@@ -1,40 +1,56 @@
 package document_clustering.similarity;
 
+import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 /**
+ * devide and distribute the indexes
+ * <p>
+ * if the index is short, just send it to a container and the container will do a self join.
+ * if the index is long, I first devide it into splitNum splits.
+ * there are two strategies.
+ *
+ * <p>
  * Created by edwardlol on 2016/12/2.
  */
-public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
+public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
+    //~ Instance fields --------------------------------------------------------
 
-    private IntWritable outputKey = new IntWritable();
+    private IntIntTupleWritable outputKey = new IntIntTupleWritable();
 
     private Text outputValue = new Text();
 
+    /**
+     * container index for short inverted_indexes
+     */
     private int smallIndex = 0;
 
+    /**
+     * container index for long inverted_indexes
+     */
     private int bigIndex = 0;
 
+    /**
+     * number of reducer tasks
+     */
     private int reduceNum;
 
     private int splitNum;
 
     private int longThreshold;
 
-    private StringBuilder stringBuilder = new StringBuilder();
+    private StringBuilder sb1 = new StringBuilder();
 
     //~ Methods ----------------------------------------------------------------
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
-        this.reduceNum = conf.getInt("reducer.num", 1);
+        this.reduceNum = conf.getInt("reducer.num", 5);
         this.splitNum = conf.getInt("split.num", 6);
         this.longThreshold = conf.getInt("long.threshold", 1000);
     }
@@ -56,35 +72,56 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
         String[] docs = value.toString().split(",");
 
         if (docs.length > this.longThreshold) {
-            /*  */
+            /* set the length of each container */
             int docsInSeg = docs.length / this.splitNum;
             if (docs.length % this.splitNum != 0) {
                 docsInSeg++;
             }
 
             for (int i = 0; i < this.splitNum - 1; i++) {
-                this.stringBuilder.setLength(0);
+                this.sb1.setLength(0);
+
+                /*  */
                 for (int a = 0; a < docsInSeg; a++) {
-                    this.stringBuilder.append(docs[i * docsInSeg + a]).append(',');
+                    this.sb1.append(docs[i * docsInSeg + a]).append(',');
                 }
+                this.sb1.deleteCharAt(this.sb1.length() - 1);
+                this.outputKey.set(this.bigIndex++, 0);
+                this.outputValue.set(termId + ":" + this.sb1.toString());
+                context.write(this.outputKey, this.outputValue);
+                // TODO: 17-2-23 is it necessary to do %?
+                this.bigIndex = this.bigIndex % this.reduceNum;
+
                 for (int j = i + 1; j < this.splitNum; j++) {
+                    /* continue from sb1 */
+                    StringBuilder sb2 = new StringBuilder(this.sb1).append('#');
                     for (int b = 0; b < docsInSeg; b++) {
                         int index = j * docsInSeg + b;
                         if (index >= docs.length) {
                             break;
                         }
-                        this.stringBuilder.append(docs[index]).append(',');
+                        sb2.append(docs[index]).append(',');
                     }
-                    this.outputKey.set(this.bigIndex++);
-                    this.outputValue.set(termId + ":"
-                            + this.stringBuilder.deleteCharAt(this.stringBuilder.length() - 1).toString());
+                    sb2.deleteCharAt(sb2.length() - 1);
+                    this.outputKey.set(this.bigIndex++, 1);
+                    this.outputValue.set(termId + ":" + sb2.toString());
+
                     // container_id \t term_id:group_id=tf-idf,...
                     context.write(this.outputKey, this.outputValue);
                     this.bigIndex = this.bigIndex % this.reduceNum;
                 }
             }
+            this.sb1.setLength(0);
+            for (int a = (this.splitNum - 1) * docsInSeg; a < docs.length; a++) {
+                this.sb1.append(docs[a]).append(',');
+            }
+            this.sb1.deleteCharAt(this.sb1.length() - 1);
+            this.outputKey.set(this.bigIndex++, 0);
+            this.outputValue.set(termId + ":" + this.sb1.toString());
+            context.write(this.outputKey, this.outputValue);
+            this.bigIndex = this.bigIndex % this.reduceNum;
         } else if (docs.length > 1) {
-            this.outputKey.set(smallIndex++);
+            this.outputKey.set(smallIndex++, 0);
             this.outputValue.set(termId + ":" + value.toString());
             // container_id \t term_id:group_id=tf-idf,...
             context.write(this.outputKey, this.outputValue);
@@ -93,4 +130,4 @@ public class PreMapper extends Mapper<Text, Text, IntWritable, Text> {
     }
 }
 
-// End PreMapper.java
+// End PreMapper2.java

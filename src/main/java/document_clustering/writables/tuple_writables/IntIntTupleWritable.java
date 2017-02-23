@@ -33,20 +33,18 @@ public class IntIntTupleWritable extends TupleWritable<IntWritable, IntWritable>
             return false;
         }
         IntIntTupleWritable guest = (IntIntTupleWritable) that;
-        return (this.left.equals(guest.left)
-                && this.right.equals(guest.right))
-                || (this.left.equals(guest.right)
-                && this.right.equals(guest.left));
+        return (this.left.equals(guest.left) && this.right.equals(guest.right));
     }
 
     @Override
     public int compareTo(TupleWritable that) {
         IntIntTupleWritable guest = (IntIntTupleWritable) that;
 
-        if (this.left.compareTo(guest.left) == 0) {
+        int result = this.left.compareTo(guest.left);
+        if (result == 0) {
             return this.right.compareTo(guest.right);
         }
-        return this.left.compareTo(guest.right);
+        return result;
     }
 
 

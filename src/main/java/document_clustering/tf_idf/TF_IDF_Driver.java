@@ -21,6 +21,8 @@ import org.apache.hadoop.util.ToolRunner;
 import java.net.URI;
 
 /**
+ * make inverted index from tf-idf result
+ * <p>
  * Created by edwardlol on 2016/12/5.
  */
 public class TF_IDF_Driver extends Configured implements Tool {
