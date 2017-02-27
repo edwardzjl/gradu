@@ -32,8 +32,8 @@ public class MSTDriver extends Configured implements Tool {
             System.exit(1);
         }
 
-        Path step1_OutputFile = new Path(args[2] + "/step1");
-        Path finalOutputFile = new Path(args[2] + "/result");
+        Path step1_OutputDir = new Path(args[2] + "/step1");
+        Path resultDir = new Path(args[2] + "/result");
 
         URI docCntFile = new URI(args[1] + "/part-r-00000#docCnt");
 
@@ -66,14 +66,14 @@ public class MSTDriver extends Configured implements Tool {
 
         JobControl jobControl = new JobControl("mst jobs");
 
-        //
+        /* step 1, split and calculate the child msts */
         Job childJob = Job.getInstance(conf, "mst child job");
         childJob.setJarByClass(MSTDriver.class);
 
         childJob.addCacheFile(docCntFile);
 
         FileInputFormat.addInputPath(childJob, new Path(args[0]));
-        FileOutputFormat.setOutputPath(childJob, step1_OutputFile);
+        FileOutputFormat.setOutputPath(childJob, step1_OutputDir);
 
         childJob.setInputFormatClass(KeyValueTextInputFormat.class);
 
@@ -98,7 +98,7 @@ public class MSTDriver extends Configured implements Tool {
 
         finalJob.addCacheFile(docCntFile);
 
-        FileInputFormat.addInputPath(finalJob, step1_OutputFile);
+        FileInputFormat.addInputPath(finalJob, step1_OutputDir);
         finalJob.setInputFormatClass(KeyValueTextInputFormat.class);
 
         finalJob.setMapperClass(MSTFinalMapper.class);
@@ -110,7 +110,7 @@ public class MSTDriver extends Configured implements Tool {
         finalJob.setOutputKeyClass(IntWritable.class);
         finalJob.setOutputValueClass(IntWritable.class);
 
-        FileOutputFormat.setOutputPath(finalJob, finalOutputFile);
+        FileOutputFormat.setOutputPath(finalJob, resultDir);
 
         ControlledJob finalControlledJob = new ControlledJob(conf);
         finalControlledJob.setJob(finalJob);

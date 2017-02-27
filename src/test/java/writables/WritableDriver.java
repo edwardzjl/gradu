@@ -1,13 +1,16 @@
-package document_clustering.deprecated.similarity_trick;
+package writables;
 
+import document_clustering.similarity.ISimMapper;
+import document_clustering.similarity.ISimReducer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsTextInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -15,7 +18,7 @@ import org.apache.hadoop.util.ToolRunner;
 /**
  * Created by edwardlol on 2016/12/2.
  */
-public class ISimDriver extends Configured implements Tool {
+public class WritableDriver extends Configured implements Tool {
     //~  Methods ---------------------------------------------------------------
 
     @Override
@@ -37,35 +40,17 @@ public class ISimDriver extends Configured implements Tool {
                     org.apache.hadoop.fs.LocalFileSystem.class.getName());
         }
 
-        conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
-        conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
-
-
-        conf.set("mapred.child.java.opts", "-Xmx768m");
-        conf.set("mapreduce.reduce.memory.mb", "1024");
-        conf.set("mapreduce.reduce.memory.mb", "1024");
-
-        conf.set("mapreduce.task.io.sort.mb", "300");
-        conf.set("mapreduce.task.io.sort.factor", "30");
-
-        if (args.length > 2 && args[2].equals("1")) {
-            conf.setBoolean("mapreduce.map.output.compress", true);
-            conf.set("mapreduce.map.output.compress.codec", "com.hadoop.compression.lzo.LzoCodec");
-        }
-
         Job job = Job.getInstance(conf, "isim job");
-        job.setJarByClass(ISimMapper.class);
+        job.setJarByClass(WritableDriver.class);
 
-        SequenceFileInputFormat.addInputPath(job, new Path(args[0]));
-        job.setInputFormatClass(SequenceFileAsTextInputFormat.class);
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        job.setInputFormatClass(TextInputFormat.class);
 
-        job.setMapperClass(ISimMapper.class);
+        job.setMapperClass(WritableMapper.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setReducerClass(ISimReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(DoubleWritable.class);
+        job.setNumReduceTasks(0);
 
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
@@ -82,7 +67,7 @@ public class ISimDriver extends Configured implements Tool {
 
     public static void main(String[] args) throws Exception {
         Configuration configuration = new Configuration();
-        System.exit(ToolRunner.run(configuration, new ISimDriver(), args));
+        System.exit(ToolRunner.run(configuration, new WritableDriver(), args));
     }
 }
 

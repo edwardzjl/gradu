@@ -1,7 +1,7 @@
 package clustering;
 
 import document_clustering.similarity.ISimDriver;
-import document_clustering.similarity.PreDriver2;
+import document_clustering.similarity.PreDriver;
 import org.junit.Test;
 
 /**
@@ -11,7 +11,7 @@ public class SimilarityTests {
 
     @Test
     public void preTest() {
-        PreDriver2 driver = new PreDriver2();
+        PreDriver driver = new PreDriver();
         String[] args = new String[3];
         args[0] = "/final/iindex/0901_id/result";
         args[1] = "/final/pre/0901_v2_2";
@@ -24,7 +24,7 @@ public class SimilarityTests {
     }
 
     @Test
-    public void isim() {
+    public void isimTest() {
         ISimDriver driver = new ISimDriver();
         String[] args = new String[3];
         args[0] = "/final/bench/pre";
@@ -35,5 +35,9 @@ public class SimilarityTests {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void containerTest() {
+
     }
 }

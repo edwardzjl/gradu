@@ -64,12 +64,12 @@ public class SimHashStep1Reducer extends Reducer<LongWritable, Text, IntWritable
             SimHash thisHash = new SimHash(keyAndContent[1], key.get());
 
             int id = contains(thisHash);
-            if (id == 0) {
+            if (id == -1) { // does not contain
                 id = count.incrementAndGet();
                 add(thisHash, id);
             }
             this.outputKey.set(id);
-            // id \t entry_id@@g_no::g_name##g_model
+            // group_id \t entry_id@@g_no::g_name##g_model
             context.write(this.outputKey, value);
         }
     }
@@ -78,6 +78,7 @@ public class SimHashStep1Reducer extends Reducer<LongWritable, Text, IntWritable
      * add the input simhash to this.pool
      *
      * @param simHash the input simhash
+     * @param id      the group id of this simhash
      */
     private void add(SimHash simHash, int id) {
         String[] segments = simHash.getSegments(this.threshold + 1);
@@ -95,7 +96,7 @@ public class SimHashStep1Reducer extends Reducer<LongWritable, Text, IntWritable
      * check if this.pool contains the input simhash
      *
      * @param simHash input simhash
-     * @return id if this.pool contains the input simhash, 0 otherwise
+     * @return id if this.pool contains the input simhash, -1 otherwise
      */
     private int contains(SimHash simHash) {
         String[] segments = simHash.getSegments(this.threshold + 1);
@@ -111,7 +112,7 @@ public class SimHashStep1Reducer extends Reducer<LongWritable, Text, IntWritable
                 }
             }
         }
-        return 0;
+        return -1;
     }
 }
 

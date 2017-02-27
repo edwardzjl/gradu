@@ -1,6 +1,5 @@
 package document_clustering.inverted_index;
 
-import document_clustering.deprecated.InvertedIndexMapper;
 import document_clustering.util.Util;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -15,6 +14,10 @@ import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * read the big document file and calculate the inverted index
@@ -49,6 +52,30 @@ public class InvertedIndexDriver extends Configured implements Tool {
             );
         }
 
+        /* load configs */
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            String filename = "iindex.properties";
+            input = InvertedIndexDriver.class.getClassLoader().getResourceAsStream(filename);
+            if (input == null) {
+                System.out.println("Sorry, unable to find " + filename);
+            }
+            prop.load(input);
+            conf.setInt("deci.number", Integer.valueOf(prop.getProperty("deci.number")));
+            conf.setBoolean("filter.tf_idf", Boolean.valueOf(prop.getProperty("filter.tf_idf")));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         JobControl jobControl = new JobControl("inverted-index jobs");
 
         /* step 1, normalize the vector lenth of each document */
@@ -74,7 +101,7 @@ public class InvertedIndexDriver extends Configured implements Tool {
         /* step 2, calculate inverted index */
 
         Job job2 = Job.getInstance(conf, "inverted index job");
-        job2.setJarByClass(InvertedIndexMapper.class);
+        job2.setJarByClass(InvertedIndexDriver.class);
 
         FileInputFormat.addInputPath(job2, normDir);
 

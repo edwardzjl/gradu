@@ -20,7 +20,7 @@ public class MSTChildMapper extends Mapper<Text, Text, DoubleWritable, Text> {
 
     private int docCnt;
 
-    private int docsInSegment;
+    private int docsInSeg;
 
     //~ Methods ----------------------------------------------------------------
 
@@ -38,12 +38,16 @@ public class MSTChildMapper extends Mapper<Text, Text, DoubleWritable, Text> {
             fileReader.close();
         }
         Configuration conf = context.getConfiguration();
-        int reduceTaskNum = conf.getInt("reduce.task.num", 1);
-        this.docsInSegment = this.docCnt / reduceTaskNum;
+
+        int reduceTaskNum = conf.getInt("reduce.task.num", 3);
+        this.docsInSeg = this.docCnt / reduceTaskNum;
+        if (this.docCnt % reduceTaskNum != 0) {
+            this.docsInSeg++;
+        }
     }
 
     /**
-     * @param key     doc_id1,doc_id2
+     * @param key     group_id1,group_id2
      * @param value   similarity
      * @param context
      * @throws IOException
@@ -53,28 +57,29 @@ public class MSTChildMapper extends Mapper<Text, Text, DoubleWritable, Text> {
     public void map(Text key, Text value, Context context)
             throws IOException, InterruptedException {
 
-        String srcDestPair = key.toString();
-        String[] srcDest = srcDestPair.split(",");
+        String docIdPair = key.toString();
+        String[] docIds = docIdPair.split(",");
 
-        int srcId = Integer.valueOf(srcDest[0]);
-        int destId = Integer.valueOf(srcDest[1]);
+        int docId1 = Integer.valueOf(docIds[0]);
+        int docId2 = Integer.valueOf(docIds[1]);
 
-        int container1 = (srcId - 1) / docsInSegment;
-        int container2 = (destId - 1) / docsInSegment;
+        int container1 = (docId1 - 1) / this.docsInSeg;
+        int container2 = (docId2 - 1) / this.docsInSeg;
 
         // get the weight
         double weight = Double.valueOf(value.toString());
         this.outputKey.set(weight);
 
         if (container1 != container2
-                && ((destId - 1) % docsInSegment > (docsInSegment / 2))) {
-//                || destId % docsInSegment == 0)) {
-            this.outputValue.set(srcDestPair + ":" + container2);
+//                && ((docId2 - 1) % this.docsInSeg > (this.docsInSeg / 2))) {
+                && (docId2 % this.docsInSeg >= (this.docsInSeg / 2))) {
+//                || docId2 % docsInSeg == 0)) {
+            this.outputValue.set(docIdPair + ":" + container2);
         } else {
-            this.outputValue.set(srcDestPair + ":" + container1);
+            this.outputValue.set(docIdPair + ":" + container1);
         }
-        // weight \t (src,dest):containder_id
-        context.write(outputKey, this.outputValue);
+        // weight \t src,dest:containder_id
+        context.write(this.outputKey, this.outputValue);
     }
 }
 // End MSTChildMapper.java

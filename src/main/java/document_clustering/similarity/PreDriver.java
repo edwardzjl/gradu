@@ -1,9 +1,9 @@
-package document_clustering.similarity.deprecated;
+package document_clustering.similarity;
 
+import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -23,7 +23,8 @@ public class PreDriver extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         if (args.length < 2) {
-            System.err.printf("usage: %s inverted_index_result_dir output_dir [compress] [split number]\n"
+            System.err.printf("usage: %s inverted_index_result_dir output_dir" +
+                            " [compress] [split number]\n"
                     , getClass().getSimpleName());
             System.exit(1);
         }
@@ -51,18 +52,19 @@ public class PreDriver extends Configured implements Tool {
 
         conf.setInt("reducer.num", 15);
 
-        conf.setInt("split.num", 10);
+        conf.setInt("split.num", 6);
 
         Job job = Job.getInstance(conf, "pre job");
-        job.setJarByClass(PreMapper.class);
+        job.setJarByClass(PreDriver.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
-
         job.setInputFormatClass(KeyValueTextInputFormat.class);
 
         job.setMapperClass(PreMapper.class);
-        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputKeyClass(IntIntTupleWritable.class);
         job.setMapOutputValueClass(Text.class);
+
+        job.setPartitionerClass(PrePartitioner.class);
 
         job.setNumReduceTasks(conf.getInt("reducer.num", 15));
         job.setReducerClass(PreReducer.class);

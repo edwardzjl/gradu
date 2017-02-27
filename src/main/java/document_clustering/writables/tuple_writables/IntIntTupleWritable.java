@@ -71,7 +71,7 @@ public class IntIntTupleWritable extends TupleWritable<IntWritable, IntWritable>
 
     @Override
     public String toString() {
-        return "(" + this.left.toString() + "," + this.right.toString() + ")";
+        return this.left.toString() + "," + this.right.toString();
     }
 }
 

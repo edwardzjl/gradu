@@ -56,7 +56,7 @@ public class MSTChildReducer extends Reducer<DoubleWritable, Text, DoubleWritabl
             int src = Integer.valueOf(srcDest[0]);
             int dest = Integer.valueOf(srcDest[1]);
 
-            if (unionFind.union(src, dest)) {
+            if (this.unionFind.union(src, dest)) {
                 this.outputValue.set(srcDestPair[0]);
                 context.write(inputKey, this.outputValue);
             }

@@ -15,13 +15,13 @@ public class ISimReducer extends Reducer<Text, Text, Text, DoubleWritable> {
 
     private DoubleWritable outputValue = new DoubleWritable();
 
-    private Set<String> containedTerms = new HashSet<>();
+    private Set<Integer> containedTerms = new HashSet<>();
 
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     src,dest
-     * @param values  term:sim
+     * @param key     docId1,docId2
+     * @param values  termId:sim
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -33,13 +33,14 @@ public class ISimReducer extends Reducer<Text, Text, Text, DoubleWritable> {
         double sim = 0.0d;
         for (Text value : values) {
             String[] line = value.toString().split(":");
-            if (!this.containedTerms.contains(line[0])) {
+            int termId = Integer.valueOf(line[0]);
+            if (this.containedTerms.add(termId)) {
                 sim += Double.valueOf(line[1]);
-                this.containedTerms.add(line[0]);
             }
         }
         if (sim > 0.05d) {
             this.outputValue.set(Math.abs(1.0d - sim));
+            // docId1,docId2 \t sim
             context.write(key, this.outputValue);
         }
     }

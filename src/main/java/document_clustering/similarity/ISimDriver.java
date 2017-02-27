@@ -6,6 +6,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsTextInputFormat;
@@ -37,21 +38,20 @@ public class ISimDriver extends Configured implements Tool {
                     org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             conf.set("fs.file.impl",
                     org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+            conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
+            conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
+
+            conf.set("mapred.child.java.opts", "-Xmx768m");
+            conf.set("mapreduce.reduce.memory.mb", "1024");
+            conf.set("mapreduce.reduce.memory.mb", "1024");
+
+            conf.set("mapreduce.task.io.sort.mb", "300");
+            conf.set("mapreduce.task.io.sort.factor", "30");
         }
 
-        conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
-        conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
-
-
-        conf.set("mapred.child.java.opts", "-Xmx768m");
-        conf.set("mapreduce.reduce.memory.mb", "1024");
-        conf.set("mapreduce.reduce.memory.mb", "1024");
-
-        conf.set("mapreduce.task.io.sort.mb", "300");
-        conf.set("mapreduce.task.io.sort.factor", "30");
-
         Job job = Job.getInstance(conf, "isim job");
-        job.setJarByClass(ISimMapper.class);
+        job.setJarByClass(ISimDriver.class);
 
         if (args.length > 2 && args[2].equals("1")) {
             conf.setBoolean("mapreduce.map.output.compress", true);
@@ -63,7 +63,8 @@ public class ISimDriver extends Configured implements Tool {
             job.setInputFormatClass(KeyValueTextInputFormat.class);
         }
 
-        job.setMapperClass(ISimMapper.class);
+//        job.setMapperClass(ISimMapper.class);
+        job.setMapperClass(Mapper.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 

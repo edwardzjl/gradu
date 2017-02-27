@@ -17,7 +17,7 @@ import java.io.IOException;
  * <p>
  * Created by edwardlol on 2016/12/2.
  */
-public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
+public class PreMapper extends Mapper<Text, Text, IntIntTupleWritable, Text> {
     //~ Instance fields --------------------------------------------------------
 
     private IntIntTupleWritable outputKey = new IntIntTupleWritable();
@@ -33,11 +33,6 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
      * container index for long inverted_indexes
      */
     private int bigIndex = 0;
-
-    /**
-     * number of reducer tasks
-     */
-//    private int reduceNum;
 
     /**
      * the number of splits to divide a long index into
@@ -57,9 +52,8 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
-//        this.reduceNum = conf.getInt("reducer.num", 5);
         this.splitNum = conf.getInt("split.num", 6);
-        this.lengthThreshold = conf.getInt("long.threshold", 1000);
+        this.lengthThreshold = conf.getInt("length.threshold", 1000);
     }
 
     /**
@@ -97,8 +91,6 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
                 this.outputValue.set(termId + ":" + this.sb1.toString());
                 // container_id,flag \t term_id:group_id=tf-idf,...
                 context.write(this.outputKey, this.outputValue);
-                // TODO: 17-2-23 is it necessary to do %?
-//                this.bigIndex = this.bigIndex % this.reduceNum;
 
                 for (int j = i + 1; j < this.splitNum; j++) {
                     /* continue from sb1 */
@@ -113,10 +105,8 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
                     sb2.deleteCharAt(sb2.length() - 1);
                     this.outputKey.set(this.bigIndex++, 1);
                     this.outputValue.set(termId + ":" + sb2.toString());
-
                     // container_id,flag \t term_id:group_id=tf-idf,...
                     context.write(this.outputKey, this.outputValue);
-//                    this.bigIndex = this.bigIndex % this.reduceNum;
                 }
             }
             this.sb1.setLength(0);
@@ -127,15 +117,13 @@ public class PreMapper2 extends Mapper<Text, Text, IntIntTupleWritable, Text> {
             this.outputKey.set(this.bigIndex++, 0);
             this.outputValue.set(termId + ":" + this.sb1.toString());
             context.write(this.outputKey, this.outputValue);
-//            this.bigIndex = this.bigIndex % this.reduceNum;
         } else if (docs.length > 1) {
             this.outputKey.set(smallIndex++, 0);
             this.outputValue.set(termId + ":" + value.toString());
             // container_id,flag \t term_id:group_id=tf-idf,...
             context.write(this.outputKey, this.outputValue);
-//            this.smallIndex = this.smallIndex % this.reduceNum;
         }
     }
 }
 
-// End PreMapper2.java
+// End PreMapper.java

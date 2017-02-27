@@ -24,7 +24,7 @@ public class MSTChildPartitioner extends Partitioner<DoubleWritable, Text> {
         }
         String[] contents = value.toString().split(":");
 
-        return Integer.valueOf(contents[1]);
+        return Integer.valueOf(contents[1]) % numPartitions;
     }
 }
 

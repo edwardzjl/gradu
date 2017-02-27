@@ -32,6 +32,8 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
 
     private DecimalFormat decimalFormat;
 
+    private boolean filter_tf_idf;
+
     //~ Methods ----------------------------------------------------------------
 
     @Override
@@ -44,6 +46,7 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
             stringBuilder.append('0');
         }
         this.decimalFormat = new DecimalFormat(stringBuilder.toString());
+        this.filter_tf_idf = conf.getBoolean("filter.tf_idf", false);
     }
 
     /**
@@ -68,10 +71,11 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
             double tf_idf = Double.valueOf(idAndTFIDF[1]);
             /* filter the small tf_idfs
             which contributes little to the final similarity */
-//            if (tf_idf > 0.1d) {
-                this.stringBuilder.append(idAndTFIDF[0]).append('=')
-                        .append(this.decimalFormat.format(tf_idf)).append(',');
-//            }
+            if (filter_tf_idf && tf_idf < 0.1d) {
+                continue;
+            }
+            this.stringBuilder.append(idAndTFIDF[0]).append('=')
+                    .append(this.decimalFormat.format(tf_idf)).append(',');
         }
         try {
             this.stringBuilder.deleteCharAt(this.stringBuilder.length() - 1);
@@ -79,20 +83,9 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
             System.out.println(this.stringBuilder.toString());
         }
 
-
-        /* output the terms whose index is bigger than 1
-         * it means this term occurs in at least 2 documents
-         * and only in this way does this term contribute to the doc similarity */
-//        if (this.stringBuilder.length() > 1) {
-//            this.outputKey.set(id + ":" + key.toString());
-//            this.outputValue.set(this.stringBuilder.toString());
-//            // term \t group_id=tf-idf,...
-//            context.write(key, this.outputValue);
-//        }
-
         this.outputKey.set(id + ":" + key.toString());
         this.outputValue.set(this.stringBuilder.toString());
-        // term \t group_id=tf-idf,...
+        // termId:term \t group_id=tf-idf,...
         context.write(this.outputKey, this.outputValue);
     }
 }
