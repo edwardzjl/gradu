@@ -6,6 +6,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -48,16 +50,18 @@ public class ISimDriver extends Configured implements Tool {
         conf.set("mapreduce.task.io.sort.mb", "300");
         conf.set("mapreduce.task.io.sort.factor", "30");
 
-        if (args.length > 2 && args[2].equals("1")) {
-            conf.setBoolean("mapreduce.map.output.compress", true);
-            conf.set("mapreduce.map.output.compress.codec", "com.hadoop.compression.lzo.LzoCodec");
-        }
-
         Job job = Job.getInstance(conf, "isim job");
         job.setJarByClass(ISimMapper.class);
 
-        SequenceFileInputFormat.addInputPath(job, new Path(args[0]));
-        job.setInputFormatClass(SequenceFileAsTextInputFormat.class);
+        if (args.length > 2 && args[2].equals("1")) {
+            conf.setBoolean("mapreduce.map.output.compress", true);
+            conf.set("mapreduce.map.output.compress.codec", "com.hadoop.compression.lzo.LzoCodec");
+            SequenceFileInputFormat.addInputPath(job, new Path(args[0]));
+            job.setInputFormatClass(SequenceFileAsTextInputFormat.class);
+        } else {
+            FileInputFormat.addInputPath(job, new Path(args[0]));
+            job.setInputFormatClass(KeyValueTextInputFormat.class);
+        }
 
         job.setMapperClass(ISimMapper.class);
         job.setMapOutputKeyClass(Text.class);

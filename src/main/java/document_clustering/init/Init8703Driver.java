@@ -46,7 +46,7 @@ public class Init8703Driver extends Configured implements Tool {
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
 
-        job.setMapperClass(Init8703Mapper2.class);
+        job.setMapperClass(Init8703Mapper.class);
 
         job.setNumReduceTasks(0);
         job.setOutputKeyClass(Text.class);

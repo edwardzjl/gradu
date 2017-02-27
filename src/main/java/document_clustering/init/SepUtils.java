@@ -46,7 +46,11 @@ public class SepUtils {
                 stringBuilder.append(word).append(' ');
             }
         }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        try {
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        } catch (RuntimeException e) {
+            System.out.println(stringBuilder.toString());
+        }
         return stringBuilder;
     }
 

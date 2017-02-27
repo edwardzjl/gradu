@@ -48,17 +48,15 @@ public class Init0901Mapper extends Mapper<LongWritable, Text, Text, Text> {
 
         String[] contents = replaceSynonyms(value.toString()).split("@@");
 
-        this.outputKey.set(contents[0] + "@@" + contents[1]);
-
         this.stringBuilder.setLength(0);
         this.stringBuilder = SepUtils.appendByAnsj(this.stringBuilder, contents[4]).append("##");
         // TODO: 17-2-22 make this a choice
 //        this.stringBuilder = SepUtils.appendByJieba(this.stringBuilder, contents[4]).append("##");
-
         if (contents.length == 6) {
             this.stringBuilder = SepUtils.appendByAnsj(this.stringBuilder, contents[5]);
             //        this.stringBuilder = SepUtils.appendByJieba(this.stringBuilder, contents[5]);
         }
+        this.outputKey.set(contents[0] + "@@" + contents[1]);
         this.outputValue.set(this.stringBuilder.toString());
         context.write(this.outputKey, this.outputValue);
     }

@@ -73,7 +73,6 @@ public class Init8703Mapper extends Mapper<LongWritable, Text, Text, Text> {
             this.stringBuilder = SepUtils.appendByAnsj(this.stringBuilder, nameAndModel[1]);
 //            this.stringBuilder = SepUtils.appendByJieba(this.stringBuilder, nameAndModel[1]);
         }
-
         this.outputKey.set(contents[0] + "@@" + contents[1]);
         this.outputValue.set(this.stringBuilder.toString());
         context.write(this.outputKey, this.outputValue);

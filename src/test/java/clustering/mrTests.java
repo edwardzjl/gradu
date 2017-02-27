@@ -258,19 +258,4 @@ public class mrTests {
         System.err.println((endtime - starttime) / 1000);
     }
 
-    @Deprecated
-    @Ignore
-    @Test
-    public void resultTest() {
-        deprecated.ShowResultDriver driver = new deprecated.ShowResultDriver();
-        String[] args = new String[2];
-        args[0] = "/user/edwardlol/playground/mst.5/result";
-        args[1] = "/user/edwardlol/playground/result.5";
-        try {
-            driver.run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }

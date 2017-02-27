@@ -68,12 +68,17 @@ public class InvertedIndexReducer extends Reducer<Text, Text, Text, Text> {
             double tf_idf = Double.valueOf(idAndTFIDF[1]);
             /* filter the small tf_idfs
             which contributes little to the final similarity */
-            if (tf_idf > 0.1d) {
+//            if (tf_idf > 0.1d) {
                 this.stringBuilder.append(idAndTFIDF[0]).append('=')
                         .append(this.decimalFormat.format(tf_idf)).append(',');
-            }
+//            }
         }
-        this.stringBuilder.deleteCharAt(this.stringBuilder.length() - 1);
+        try {
+            this.stringBuilder.deleteCharAt(this.stringBuilder.length() - 1);
+        } catch (RuntimeException e) {
+            System.out.println(this.stringBuilder.toString());
+        }
+
 
         /* output the terms whose index is bigger than 1
          * it means this term occurs in at least 2 documents

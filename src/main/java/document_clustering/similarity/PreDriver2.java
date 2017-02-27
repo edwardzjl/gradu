@@ -1,6 +1,5 @@
 package document_clustering.similarity;
 
-import document_clustering.similarity.deprecated.PreMapper;
 import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -58,12 +57,13 @@ public class PreDriver2 extends Configured implements Tool {
         job.setJarByClass(PreDriver2.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
-
         job.setInputFormatClass(KeyValueTextInputFormat.class);
 
         job.setMapperClass(PreMapper2.class);
         job.setMapOutputKeyClass(IntIntTupleWritable.class);
         job.setMapOutputValueClass(Text.class);
+
+        job.setPartitionerClass(PrePartitioner.class);
 
         job.setNumReduceTasks(conf.getInt("reducer.num", 15));
         job.setReducerClass(PreReducer2.class);
