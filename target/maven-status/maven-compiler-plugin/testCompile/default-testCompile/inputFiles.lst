@@ -1,5 +1,8 @@
+/Users/edwardlol/workspace/recommend_MR/src/test/java/writables/WritableMapper.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/partition_test/pReducer.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/partition_test/pPartitioner.java
+/Users/edwardlol/workspace/recommend_MR/src/test/java/writables/WritableDriver.java
+/Users/edwardlol/workspace/recommend_MR/src/test/java/writables/WritableTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/mrTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/InvertedIndexTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/SimHashTests.java
@@ -9,5 +12,6 @@
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/TF_IDF_Tests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/InitTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/word_sep/SepTest.java
+/Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/MstTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/partition_test/pDriver.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/SimilarityTests.java

@@ -1,5 +1,7 @@
 clustering/InitTests.class
 clustering/UtilTests.class
+writables/WritableDriver.class
+writables/WritableMapper.class
 partition_test/pPartitioner.class
 clustering/mrTests.class
 clustering/SimilarityTests.class
@@ -8,6 +10,8 @@ partition_test/pDriver.class
 clustering/SimHashTests.class
 partition_test/columnTest.class
 partition_test/pReducer.class
+clustering/MstTests.class
 word_sep/SepTest.class
+writables/WritableTests.class
 clustering/InvertedIndexTests.class
 partition_test/pMapper.class

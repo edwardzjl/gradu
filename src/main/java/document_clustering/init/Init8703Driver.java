@@ -48,7 +48,7 @@ public class Init8703Driver extends Configured implements Tool {
 
         job.setMapperClass(Init8703Mapper.class);
 
-        job.setNumReduceTasks(0);
+//        job.setNumReduceTasks(0);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 

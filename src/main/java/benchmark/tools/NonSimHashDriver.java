@@ -4,8 +4,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -45,8 +47,13 @@ public class NonSimHashDriver extends Configured implements Tool {
         job1.setInputFormatClass(TextInputFormat.class);
 
         job1.setMapperClass(NonSimHashMapper.class);
-        job1.setMapOutputKeyClass(IntWritable.class);
+        job1.setMapOutputKeyClass(NullWritable.class);
         job1.setMapOutputValueClass(Text.class);
+
+        job1.setNumReduceTasks(1);
+        job1.setReducerClass(NonSimHashReducer.class);
+        job1.setOutputKeyClass(IntWritable.class);
+        job1.setOutputValueClass(Text.class);
 
         FileOutputFormat.setOutputPath(job1, new Path(args[1]));
 
