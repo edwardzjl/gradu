@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Created by edwardlol on 2016/12/2.
  */
-public class ISimReducer extends Reducer<Text, DoubleWritable, Text, DoubleWritable> {
+public class ISimCombiner extends Reducer<Text, DoubleWritable, Text, DoubleWritable> {
 
     private DoubleWritable outputValue = new DoubleWritable();
 
@@ -30,7 +30,7 @@ public class ISimReducer extends Reducer<Text, DoubleWritable, Text, DoubleWrita
             sim += value.get();
         }
         if (sim > 0.001d) {
-            this.outputValue.set(Math.abs(1.0d - sim));
+            this.outputValue.set(sim);
             // docId1,docId2 \t sim
             context.write(key, this.outputValue);
         }

@@ -17,6 +17,8 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
 
     private Text outputValue = new Text();
 
+    private String formatBase;
+
     private DecimalFormat decimalFormat;
 
     //~ Methods ----------------------------------------------------------------
@@ -24,13 +26,14 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
-        int deci_num = conf.getInt("deci.number", 3);
+        int deciNum = conf.getInt("deci.number", 3);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("0.");
-        for (int i = 0; i < deci_num; i++) {
+        for (int i = 0; i < deciNum; i++) {
             stringBuilder.append('0');
         }
-        this.decimalFormat = new DecimalFormat(stringBuilder.toString());
+        this.formatBase = stringBuilder.toString();
+        this.decimalFormat = new DecimalFormat(this.formatBase);
     }
 
     /**
@@ -72,11 +75,7 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
                         String[] idAndWeighti = contents[i].split("=");
                         String[] idAndWeightj = contents[j].split("=");
 
-                        setOutputKey(idAndWeighti[0], idAndWeightj[0]);
-                        setOutputValue(idAndWeighti[1], idAndWeightj[1]);
-
-                        // doc1,doc2 \t sim
-                        context.write(this.outputKey, this.outputValue);
+                        output(idAndWeighti[0], idAndWeightj[0], idAndWeighti[1], idAndWeightj[1], context);
                     }
                 }
             }
@@ -106,11 +105,7 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
                         String[] idAndWeight1 = aPart1.split("=");
                         String[] idAndWeight2 = aPart2.split("=");
 
-                        setOutputKey(idAndWeight1[0], idAndWeight2[0]);
-                        setOutputValue(idAndWeight1[1], idAndWeight2[1]);
-
-                        // doc1,doc2 \t sim
-                        context.write(this.outputKey, this.outputValue);
+                        output(idAndWeight1[0], idAndWeight2[0], idAndWeight1[1], idAndWeight2[1], context);
                     }
                 }
             }
@@ -121,21 +116,32 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
         }
     }
 
-    private void setOutputKey(String id1, String id2) {
-        if (Integer.valueOf(id1) > Integer.valueOf(id2)) {
-            this.outputKey.set(id2 + "," + id1);
-        } else {
-            this.outputKey.set(id1 + "," + id2);
+    /**
+     * @param id1
+     * @param id2
+     * @param tf_idf1
+     * @param tf_idf2
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private void output(String id1, String id2,
+                        String tf_idf1, String tf_idf2, Context context)
+            throws IOException, InterruptedException {
+        double result = Double.valueOf(tf_idf1) * Double.valueOf(tf_idf2);
+
+//        if (result > this.threshold) {
+        String out = this.decimalFormat.format(result);
+        if (!this.formatBase.equals(out)) {
+            if (Integer.valueOf(id1) > Integer.valueOf(id2)) {
+                this.outputKey.set(id2 + "," + id1);
+            } else {
+                this.outputKey.set(id1 + "," + id2);
+            }
+            this.outputValue.set(out);
+            // doc1,doc2 \t sim
+            context.write(this.outputKey, this.outputValue);
         }
-    }
-
-    private void setOutputValue(String tf_idf1, String tf_idf2) {
-        String out = format(Double.valueOf(tf_idf1) * Double.valueOf(tf_idf2));
-        this.outputValue.set(out);
-    }
-
-    private String format(double value) {
-        return this.decimalFormat.format(value);
     }
 }
 

@@ -43,7 +43,9 @@ public class ISimDriver extends Configured implements Tool {
             conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
 
             conf.set("mapred.child.java.opts", "-Xmx768m");
-            conf.set("mapreduce.reduce.memory.mb", "1024");
+            conf.set("mapreduce.reduce.memory.mb", "2048");
+
+            conf.set("mapreduce.reduce.shuffle.input.buffer.percent", "0.2");
 
             conf.set("mapreduce.task.io.sort.mb", "300");
             conf.set("mapreduce.task.io.sort.factor", "30");
@@ -66,7 +68,9 @@ public class ISimDriver extends Configured implements Tool {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(DoubleWritable.class);
 
-        job.setCombinerClass(ISimReducer.class);
+        job.setCombinerClass(ISimCombiner.class);
+
+        job.setNumReduceTasks(Integer.valueOf(args[3]));
 
         job.setReducerClass(ISimReducer.class);
         job.setOutputKeyClass(Text.class);

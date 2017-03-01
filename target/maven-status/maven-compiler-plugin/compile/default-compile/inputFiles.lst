@@ -69,6 +69,7 @@
 /Users/edwardlol/workspace/recommend_MR/src/main/java/document_clustering/similarity_old/PrePartitioner.java
 /Users/edwardlol/workspace/recommend_MR/src/main/java/document_clustering/util/JDBCUtil.java
 /Users/edwardlol/workspace/recommend_MR/src/main/java/benchmark/tools/NonSimHashDriver.java
+/Users/edwardlol/workspace/recommend_MR/src/main/java/document_clustering/similarity/ISimCombiner.java
 /Users/edwardlol/workspace/recommend_MR/src/main/java/document_clustering/writables/LongCollectionWritable.java
 /Users/edwardlol/workspace/recommend_MR/src/main/java/document_clustering/linkback/ProcessClusterDriver.java
 /Users/edwardlol/workspace/recommend_MR/src/main/java/document_clustering/init/Init6310Mapper.java

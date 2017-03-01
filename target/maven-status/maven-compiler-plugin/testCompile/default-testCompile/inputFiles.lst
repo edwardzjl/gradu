@@ -7,6 +7,7 @@
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/InvertedIndexTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/SimHashTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/partition_test/columnTest.java
+/Users/edwardlol/workspace/recommend_MR/src/test/java/Utils.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/partition_test/pMapper.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/UtilTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/TF_IDF_Tests.java

@@ -54,6 +54,7 @@ document_clustering/writables/tuple_writables/TextDoubleTupleWritable.class
 document_clustering/linkback/bas0901/Process0901Mapper.class
 document_clustering/writables/tuple_writables/TextTextTupleWritable.class
 document_clustering/simhash/SimHash.class
+document_clustering/similarity/ISimCombiner.class
 document_clustering/linkback/Step1Reducer.class
 document_clustering/similarity_old/PrePartitioner.class
 document_clustering/writables/tuple_writables/TextIntTupleWritable.class
