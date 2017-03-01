@@ -1,31 +1,20 @@
 package clustering;
 
-import com.google.common.collect.Maps;
-import com.huaban.analysis.jieba.JiebaSegmenter;
-import com.huaban.analysis.jieba.SegToken;
-import com.huaban.analysis.jieba.WordDictionary;
 import document_clustering.util.CollectionUtil;
-import document_clustering.util.JiebaFactory;
-import org.ansj.splitWord.analysis.ToAnalysis;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.synonym.SynonymFilterFactory;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.util.FilesystemResourceLoader;
 import org.apache.lucene.util.Version;
-import org.apache.mahout.common.distance.CosineDistanceMeasure;
 import org.apache.mahout.common.distance.EuclideanDistanceMeasure;
 import org.apache.mahout.math.RandomAccessSparseVector;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by edwardlol on 2016/12/4.
@@ -37,11 +26,6 @@ public class UtilTests {
 
     //~ Methods ----------------------------------------------------------------
 
-    @Test
-    public void sepTest() {
-        String str = "欢迎使用ansj_seg,(ansj中文分词)在这里如果你遇到什么问题都可以联系我.我一定尽我所能.帮助大家.ansj_seg更快,更准,更自由!" ;
-        System.out.println(ToAnalysis.parse(str));
-    }
 
     private static String format(double value) {
         return String.format("%.2f", value);
@@ -85,48 +69,6 @@ public class UtilTests {
         ts.close();
     }
 
-    @Test
-    public void jiebaTest2() {
-        String test = "乘用车（1.6L）  221(几内亚)     乘用车（1.6L";
-        JiebaFactory factory = JiebaFactory.getInstance("./dicts");
-        List<String> terms = factory.seperate(test, JiebaSegmenter.SegMode.SEARCH);
-        for (String term : terms) {
-            System.out.println(term);
-        }
-    }
-
-    @Test
-    public void reTest() {
-        String test = " 乘用车";
-        String regex =
-                "^[\\pP+~$`^=|<>～｀＄＾＋＝｜＜＞￥×\\s]+$|" +
-                        "^\\s*\\d+\\.\\d+\\s*$|" +
-                        "^\\s*[a-z牌型与也且的了于无不非个为之但人位全≥≦☆丨]\\s*$|" +
-                        "^\\s*\\d+(?:|cc|ml)\\s*$|" +
-                        "^\\s*car\\s*$|" +
-                        "^\\s*乘用车\\s*$|" +
-                        "^\\s*丰田\\s*$|" +
-                        "^\\s*人座\\s*$|" +
-                        "^\\s*休闲\\s*$|" +
-                        "^\\s*kw\\s*$";
-        Pattern pattern = Pattern.compile(regex);
-
-        Matcher matcher = pattern.matcher(test);
-        if (matcher.find()) {
-            System.out.println("hehe");
-        }
-    }
-
-
-    @Test
-    public void test() {
-        double sim = 0.13494862701608235 * 0.13290819761474063 + 0.15588890374080677 * 0.15353185639939318
-                + 0.0452014362881258 * 0.04451798850785179 + 0.03842325003006238 * 0.03784228873545729
-                + 0.23062433385877734 * 0.22713728340205638 + 0.4089628510394415 * 0.402779314061196
-                + 0.22028055145664022 * 0.216949899462068 + 0.21721311619696895 * 0.2139288439635617
-                + 0.21349287870341022 * 0.21026485663074693;
-        System.out.println(sim);
-    }
 
     @Test
     public void splittest() {
@@ -153,80 +95,6 @@ public class UtilTests {
             System.out.println();
 
         }
-    }
-
-    @Test
-    public void normTest() {
-        double[] vec1 = new double[3];
-        double[] vec2 = new double[3];
-
-        vec1[0] = 1;
-        vec1[1] = 3;
-        vec1[2] = 5;
-
-        vec2[0] = 2;
-        vec2[1] = 4;
-        vec2[2] = 6;
-
-        RandomAccessSparseVector vector1 = new RandomAccessSparseVector(3);
-        RandomAccessSparseVector vector2 = new RandomAccessSparseVector(3);
-        for (int i = 0; i < vec1.length; i++) {
-            vector1.setQuick(i, vec1[i]);
-            vector2.setQuick(i, vec2[i]);
-        }
-        CosineDistanceMeasure cdm = new CosineDistanceMeasure();
-
-        System.out.println(cdm.distance(vector1, vector2));
-
-        double sum = 0.0d;
-        for (int i = 0; i < vec1.length; i++) {
-            sum += Math.pow(vec1[i], 2);
-        }
-        sum = Math.sqrt(sum);
-        for (int i = 0; i < vec1.length; i++) {
-            vec1[i] /= sum;
-        }
-        sum = 0.0d;
-        for (int i = 0; i < vec2.length; i++) {
-            sum += Math.pow(vec2[i], 2);
-        }
-        sum = Math.sqrt(sum);
-        for (int i = 0; i < vec2.length; i++) {
-            vec2[i] /= sum;
-        }
-        for (int i = 0; i < vec1.length; i++) {
-            vector1.setQuick(i, vec1[i]);
-            vector2.setQuick(i, vec2[i]);
-        }
-        System.out.println(cdm.distance(vector1, vector2));
-    }
-
-
-    @Test
-    public void jiebaTest() {
-        String sentence = "美瑟达研磨咖啡粉(意式浓缩易理包)MESETA FORTE@@非速溶 已浸除咖啡碱且已焙炒|阿拉比卡和罗布斯塔咖啡豆|咖啡粉 咖啡豆经培炒后研磨成粉|美瑟达MESETA牌";
-        String sentence2 = "陆地巡洋舰霸道越野车成套散件@@GRJ120L-GKAGKC 3956CC VX FQ 1859.6千克/套（06年税号）";
-        JiebaSegmenter segment0 = new JiebaSegmenter();
-        System.out.println(sentence2);
-        System.out.println("--------------------------------------------------------------------");
-        System.out.println("without dict:");
-        List<SegToken> tokens = segment0.process(sentence2, JiebaSegmenter.SegMode.SEARCH);
-        tokens.forEach(token -> {
-            System.out.print(token.word + " ");
-        });
-        System.out.println();
-
-
-        WordDictionary wordDictionary = WordDictionary.getInstance();
-        wordDictionary.init(Paths.get("dicts"));
-        JiebaSegmenter segment = new JiebaSegmenter();
-
-        System.out.println("with dict:");
-        List<SegToken> tokens2 = segment.process(sentence2, JiebaSegmenter.SegMode.SEARCH);
-        tokens2.forEach(token -> {
-            System.out.print(token.word + " ");
-        });
-        System.out.println();
     }
 
 
@@ -283,7 +151,6 @@ public class UtilTests {
         }
         return vector;
     }
-
 
 
 }

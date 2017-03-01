@@ -1,4 +1,4 @@
-package document_clustering.similarity;
+package document_clustering.similarity_old;
 
 import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
@@ -67,6 +67,9 @@ public class PreMapper extends Mapper<Text, Text, IntIntTupleWritable, Text> {
     public void map(Text key, Text value, Context context)
             throws IOException, InterruptedException {
 
+        String[] idAndTerm = key.toString().split(":");
+        String termId = idAndTerm[0];
+
         String[] docs = value.toString().split(",");
 
         if (docs.length > this.lengthThreshold) {
@@ -84,9 +87,8 @@ public class PreMapper extends Mapper<Text, Text, IntIntTupleWritable, Text> {
                     this.sb1.append(docs[i * docsInSeg + a]).append(',');
                 }
                 this.sb1.deleteCharAt(this.sb1.length() - 1);
-
                 this.outputKey.set(this.bigIndex++, 0);
-                this.outputValue.set(this.sb1.toString());
+                this.outputValue.set(termId + ":" + this.sb1.toString());
                 // container_id,flag \t term_id:group_id=tf-idf,...
                 context.write(this.outputKey, this.outputValue);
 
@@ -101,26 +103,23 @@ public class PreMapper extends Mapper<Text, Text, IntIntTupleWritable, Text> {
                         sb2.append(docs[index]).append(',');
                     }
                     sb2.deleteCharAt(sb2.length() - 1);
-
                     this.outputKey.set(this.bigIndex++, 1);
-                    this.outputValue.set(sb2.toString());
+                    this.outputValue.set(termId + ":" + sb2.toString());
                     // container_id,flag \t term_id:group_id=tf-idf,...
                     context.write(this.outputKey, this.outputValue);
                 }
             }
-
             this.sb1.setLength(0);
             for (int a = (this.splitNum - 1) * docsInSeg; a < docs.length; a++) {
                 this.sb1.append(docs[a]).append(',');
             }
             this.sb1.deleteCharAt(this.sb1.length() - 1);
-
             this.outputKey.set(this.bigIndex++, 0);
-            this.outputValue.set(this.sb1.toString());
+            this.outputValue.set(termId + ":" + this.sb1.toString());
             context.write(this.outputKey, this.outputValue);
         } else if (docs.length > 1) {
             this.outputKey.set(smallIndex++, 0);
-            this.outputValue.set(value.toString());
+            this.outputValue.set(termId + ":" + value.toString());
             // container_id,flag \t term_id:group_id=tf-idf,...
             context.write(this.outputKey, this.outputValue);
         }

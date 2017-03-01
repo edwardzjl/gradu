@@ -1,4 +1,4 @@
-package document_clustering.similarity;
+package document_clustering.similarity_old;
 
 import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
@@ -38,18 +38,17 @@ public class PreDriver extends Configured implements Tool {
                     org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
             conf.set("fs.file.impl",
                     org.apache.hadoop.fs.LocalFileSystem.class.getName());
-            // The amount of memory the MR AppMaster needs.
-            conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
-            conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
-
-            conf.set("mapred.child.java.opts", "-Xmx1536m");
-            // The amount of memory to request from the scheduler for each map task.
-            conf.set("mapreduce.map.memory.mb", "2048");
-
-            conf.set("mapreduce.reduce.memory.mb", "2048");
-
-            conf.set("mapreduce.reduce.speculative", "false");
         }
+
+        // The amount of memory the MR AppMaster needs.
+        conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
+        conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
+
+        conf.set("mapred.child.java.opts", "-Xmx1536m");
+        // The amount of memory to request from the scheduler for each map task.
+        conf.set("mapreduce.map.memory.mb", "2048");
+
+        conf.set("mapreduce.reduce.memory.mb", "2048");
 
         conf.setInt("reducer.num", 15);
 

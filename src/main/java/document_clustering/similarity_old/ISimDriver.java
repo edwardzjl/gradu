@@ -1,4 +1,4 @@
-package document_clustering.similarity;
+package document_clustering.similarity_old;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -44,6 +44,7 @@ public class ISimDriver extends Configured implements Tool {
 
             conf.set("mapred.child.java.opts", "-Xmx768m");
             conf.set("mapreduce.reduce.memory.mb", "1024");
+            conf.set("mapreduce.reduce.memory.mb", "1024");
 
             conf.set("mapreduce.task.io.sort.mb", "300");
             conf.set("mapreduce.task.io.sort.factor", "30");
@@ -62,11 +63,10 @@ public class ISimDriver extends Configured implements Tool {
             job.setInputFormatClass(KeyValueTextInputFormat.class);
         }
 
-        job.setMapperClass(ISimMapper.class);
+//        job.setMapperClass(ISimMapper.class);
+        job.setMapperClass(Mapper.class);
         job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(DoubleWritable.class);
-
-        job.setCombinerClass(ISimReducer.class);
+        job.setMapOutputValueClass(Text.class);
 
         job.setReducerClass(ISimReducer.class);
         job.setOutputKeyClass(Text.class);

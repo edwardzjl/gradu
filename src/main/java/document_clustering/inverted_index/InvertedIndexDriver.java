@@ -53,28 +53,29 @@ public class InvertedIndexDriver extends Configured implements Tool {
         }
 
         /* load configs */
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            String filename = "iindex.properties";
-            input = InvertedIndexDriver.class.getClassLoader().getResourceAsStream(filename);
-            if (input == null) {
-                System.out.println("Sorry, unable to find " + filename);
-            }
-            prop.load(input);
-            conf.setInt("deci.number", Integer.valueOf(prop.getProperty("deci.number")));
-            conf.setBoolean("filter.tf_idf", Boolean.valueOf(prop.getProperty("filter.tf_idf")));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        // TODO: 2017/2/28 finish this
+//        Properties prop = new Properties();
+//        InputStream input = null;
+//        try {
+//            String filename = "iindex.properties";
+//            input = InvertedIndexDriver.class.getClassLoader().getResourceAsStream(filename);
+//            if (input == null) {
+//                System.out.println("Sorry, unable to find " + filename);
+//            }
+//            prop.load(input);
+//            conf.setInt("deci.number", Integer.valueOf(prop.getProperty("deci.number")));
+//            conf.setBoolean("filter.tf_idf", Boolean.valueOf(prop.getProperty("filter.tf_idf")));
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        } finally {
+//            if (input != null) {
+//                try {
+//                    input.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
 
         JobControl jobControl = new JobControl("inverted-index jobs");
 

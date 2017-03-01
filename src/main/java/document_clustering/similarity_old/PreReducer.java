@@ -1,4 +1,4 @@
-package document_clustering.similarity;
+package document_clustering.similarity_old;
 
 import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.conf.Configuration;
@@ -55,15 +55,16 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
 
     /**
      * @param key     container_id, flag
-     * @param values  docId=TF-IDF,docId=TF-IDF...
+     * @param values  term_id:docId=TF-IDF,docId=TF-IDF...
      * @param context
      */
     private void selfJoin(IntIntTupleWritable key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
         try {
             for (Text value : values) {
-                String[] contents = value.toString().split(",");
-                // this term only appears in one doc, skip calculation
+                // termId, docId=TF-IDF,docId=TF-IDF...
+                String[] line = value.toString().split(":");
+                String[] contents = line[1].split(",");
                 if (contents.length < 2) {
                     continue;
                 }
@@ -73,9 +74,9 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
                         String[] idAndWeightj = contents[j].split("=");
 
                         setOutputKey(idAndWeighti[0], idAndWeightj[0]);
-                        setOutputValue(idAndWeighti[1], idAndWeightj[1]);
+                        setOutputValue(line[0], idAndWeighti[1], idAndWeightj[1]);
 
-                        // doc1,doc2 \t sim
+                        // doc1,doc2 \t termId:sim
                         context.write(this.outputKey, this.outputValue);
                     }
                 }
@@ -89,7 +90,7 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
 
     /**
      * @param key     container_id, flag
-     * @param values  docId=TF-IDF,docId=TF-IDF...
+     * @param values  term_id:docId=TF-IDF,docId=TF-IDF...
      * @param context
      */
     private void crossJoin(IntIntTupleWritable key, Iterable<Text> values, Context context)
@@ -97,7 +98,8 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
         try {
             for (Text value : values) {
                 // termId, docId=TF-IDF,docId=TF-IDF...
-                String[] sets = value.toString().split("#");
+                String[] line = value.toString().split(":");
+                String[] sets = line[1].split("#");
                 String[] set1 = sets[0].split(",");
                 String[] set2 = sets[1].split(",");
 
@@ -107,9 +109,9 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
                         String[] idAndWeight2 = aPart2.split("=");
 
                         setOutputKey(idAndWeight1[0], idAndWeight2[0]);
-                        setOutputValue(idAndWeight1[1], idAndWeight2[1]);
+                        setOutputValue(line[0], idAndWeight1[1], idAndWeight2[1]);
 
-                        // doc1,doc2 \t sim
+                        // doc1,doc2 \t term:sim
                         context.write(this.outputKey, this.outputValue);
                     }
                 }
@@ -129,9 +131,9 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
         }
     }
 
-    private void setOutputValue(String tf_idf1, String tf_idf2) {
+    private void setOutputValue(String termId, String tf_idf1, String tf_idf2) {
         String out = format(Double.valueOf(tf_idf1) * Double.valueOf(tf_idf2));
-        this.outputValue.set(out);
+        this.outputValue.set(termId + ":" + out);
     }
 
     private String format(double value) {
