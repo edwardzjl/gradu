@@ -130,7 +130,6 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
             throws IOException, InterruptedException {
         double result = Double.valueOf(tf_idf1) * Double.valueOf(tf_idf2);
 
-//        if (result > this.threshold) {
         String out = this.decimalFormat.format(result);
         if (!this.formatBase.equals(out)) {
             if (Integer.valueOf(id1) > Integer.valueOf(id2)) {

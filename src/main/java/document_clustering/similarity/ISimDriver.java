@@ -55,10 +55,11 @@ public class ISimDriver extends Configured implements Tool {
         job.setJarByClass(ISimDriver.class);
 
         if (args.length > 2 && args[2].equals("1")) {
-            conf.setBoolean("mapreduce.map.output.compress", true);
-            conf.set("mapreduce.map.output.compress.codec", "com.hadoop.compression.lzo.LzoCodec");
-            SequenceFileInputFormat.addInputPath(job, new Path(args[0]));
             job.setInputFormatClass(SequenceFileAsTextInputFormat.class);
+            SequenceFileInputFormat.addInputPath(job, new Path(args[0]));
+            conf.setBoolean("mapreduce.map.output.compress", true);
+//            conf.set("mapreduce.map.output.compress.codec", "com.hadoop.compression.lzo.LzoCodec");
+            conf.set("mapreduce.map.output.compress.codec", "org.apache.hadoop.io.compress.GzipCodec");
         } else {
             FileInputFormat.addInputPath(job, new Path(args[0]));
             job.setInputFormatClass(KeyValueTextInputFormat.class);

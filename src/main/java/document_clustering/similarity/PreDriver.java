@@ -84,7 +84,7 @@ public class PreDriver extends Configured implements Tool {
         long starttime = System.currentTimeMillis();
         boolean complete = job.waitForCompletion(true);
         long endtime = System.currentTimeMillis();
-        System.out.println("inverted similarity job finished in: "
+        System.out.println("inverted similarity pre job finished in: "
                 + (endtime - starttime) / 1000 + " seconds");
 
         return complete ? 0 : 1;
