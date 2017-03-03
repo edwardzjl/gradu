@@ -37,9 +37,17 @@ public class Step2Driver extends Configured implements Tool {
             );
         }
 
-        // step 1 output
+
+        /*
+            step 1 output
+            cluster_id, entry_id@@g_no::g_name##g_model
+         */
         conf.set("hdfs://localhost:9000" + args[0], "1");
-        // pre step output
+
+        /*
+            pre step output
+            entry_id@@g_no \t g_name@@g_model
+         */
         conf.set("hdfs://localhost:9000" + args[1], "2");
 
         Job job = Job.getInstance(conf, "result job");

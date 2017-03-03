@@ -45,7 +45,6 @@ public class PreDriver extends Configured implements Tool {
             conf.set("mapred.child.java.opts", "-Xmx1536m");
             // The amount of memory to request from the scheduler for each map task.
             conf.set("mapreduce.map.memory.mb", "2048");
-
             conf.set("mapreduce.reduce.memory.mb", "2048");
 
             conf.set("mapreduce.reduce.speculative", "false");
@@ -74,6 +73,7 @@ public class PreDriver extends Configured implements Tool {
 
         if (args.length > 2 && args[2].equals("1")) {
             job.setOutputFormatClass(SequenceFileOutputFormat.class);
+            SequenceFileOutputFormat.setCompressOutput(job, true);
             SequenceFileOutputFormat.setOutputCompressionType(job, SequenceFile.CompressionType.BLOCK);
             SequenceFileOutputFormat.setOutputCompressorClass(job, com.hadoop.compression.lzo.LzoCodec.class);
             SequenceFileOutputFormat.setOutputPath(job, new Path(args[1]));

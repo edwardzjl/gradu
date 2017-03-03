@@ -1,5 +1,6 @@
 package document_clustering.similarity;
 
+import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -9,7 +10,9 @@ import java.io.IOException;
 /**
  * Created by edwardlol on 2016/12/2.
  */
-public class ISimMapper extends Mapper<Text, Text, Text, DoubleWritable> {
+public class ISimMapper extends Mapper<Text, Text, IntIntTupleWritable, DoubleWritable> {
+
+    private IntIntTupleWritable outputKey = new IntIntTupleWritable();
 
     private DoubleWritable outputValue = new DoubleWritable();
 
@@ -26,8 +29,11 @@ public class ISimMapper extends Mapper<Text, Text, Text, DoubleWritable> {
     public void map(Text key, Text value, Context context)
             throws IOException, InterruptedException {
 
+        String[] pair = key.toString().split(",");
+        this.outputKey.set(Integer.valueOf(pair[0]), Integer.valueOf(pair[1]));
         this.outputValue.set(Double.valueOf(value.toString()));
-        context.write(key, this.outputValue);
+        // wrap input and write to reducer
+        context.write(this.outputKey, this.outputValue);
     }
 }
 

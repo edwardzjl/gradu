@@ -13,14 +13,10 @@ import java.util.Map;
 /**
  * Created by edwardlol on 2016/12/22.
  */
-public class InitCSV {
+public class Init6310 {
     //~ Static fields/initializers ---------------------------------------------
 
-    //~ Instance fields --------------------------------------------------------
-
     private static JiebaFactory jieba;
-
-    //~ Constructors -----------------------------------------------------------
 
     //~ Methods ----------------------------------------------------------------
     public static void pre6310() {
@@ -168,4 +164,4 @@ public class InitCSV {
     }
 }
 
-// End InitCSV.java
+// End Init6310.java

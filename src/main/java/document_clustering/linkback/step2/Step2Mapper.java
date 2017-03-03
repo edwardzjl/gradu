@@ -21,7 +21,7 @@ public class Step2Mapper extends Mapper<Text, Text, Step2KeyWritable, Text> {
     protected void setup(Context context) throws IOException, InterruptedException {
         FileSplit fileSplit = (FileSplit) context.getInputSplit();
         System.err.println(fileSplit.getPath().getParent().toString());
-        joinOrder = Integer.parseInt(context.getConfiguration().get(fileSplit.getPath().getParent().toString()));
+        this.joinOrder = Integer.parseInt(context.getConfiguration().get(fileSplit.getPath().getParent().toString()));
     }
 
     /**

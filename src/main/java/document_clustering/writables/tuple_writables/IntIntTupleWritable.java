@@ -24,6 +24,7 @@ public class IntIntTupleWritable extends TupleWritable<IntWritable, IntWritable>
         this.left.set(left);
         this.right.set(right);
     }
+
     //~ Methods ----------------------------------------------------------------
 
     @Override

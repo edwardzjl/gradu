@@ -4,6 +4,7 @@ writables/WritableDriver.class
 writables/WritableMapper.class
 partition_test/pPartitioner.class
 Utils.class
+demo/Combine8703.class
 clustering/mrTests.class
 clustering/SimilarityTests.class
 clustering/TF_IDF_Tests.class
