@@ -1,10 +1,8 @@
-package document_clustering.linkback;
+package document_clustering.linkback.step2;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -16,13 +14,13 @@ import org.apache.hadoop.util.ToolRunner;
 /**
  * Created by edwardlol on 2016/12/2.
  */
-public class Step1Driver extends Configured implements Tool {
+public class Step2Driver extends Configured implements Tool {
     //~  Methods ---------------------------------------------------------------
 
     @Override
     public int run(String[] args) throws Exception {
         if (args.length < 3) {
-            System.err.printf("usage: %s mst_result_dir simhash_result_file output_dir\n"
+            System.err.printf("usage: %s result_processed_dir bas_processed_dir output_dir\n"
                     , getClass().getSimpleName());
             System.exit(1);
         }
@@ -39,26 +37,28 @@ public class Step1Driver extends Configured implements Tool {
             );
         }
 
-        conf.set("mst", "1");
-        conf.set("simhash_step1", "2");
+        // step 1 output
+        conf.set("hdfs://localhost:9000" + args[0], "1");
+        // pre step output
+        conf.set("hdfs://localhost:9000" + args[1], "2");
 
         Job job = Job.getInstance(conf, "result job");
-        job.setJarByClass(Step1Driver.class);
+        job.setJarByClass(Step2Driver.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileInputFormat.addInputPath(job, new Path(args[1]));
 
         job.setInputFormatClass(KeyValueTextInputFormat.class);
 
-        job.setMapperClass(Step1Mapper.class);
-        job.setMapOutputKeyClass(Step1KeyWritable.class);
+        job.setMapperClass(Step2Mapper.class);
+        job.setMapOutputKeyClass(Step2KeyWritable.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setPartitionerClass(Step1Partitioner.class);
-        job.setGroupingComparatorClass(TaggedJoiningGroupingComparator.class);
+        job.setPartitionerClass(Step2Partitioner.class);
+        job.setGroupingComparatorClass(Step2GroupingComparator.class);
 
-        job.setReducerClass(Step1Reducer.class);
-        job.setOutputKeyClass(IntWritable.class);
+        job.setReducerClass(Step2Reducer.class);
+        job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
         FileOutputFormat.setOutputPath(job, new Path(args[2]));
@@ -70,7 +70,7 @@ public class Step1Driver extends Configured implements Tool {
 
     public static void main(String[] args) throws Exception {
         Configuration configuration = new Configuration();
-        System.exit(ToolRunner.run(configuration, new Step1Driver(), args));
+        System.exit(ToolRunner.run(configuration, new Step2Driver(), args));
     }
 }
 

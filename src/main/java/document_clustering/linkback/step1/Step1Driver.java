@@ -1,25 +1,29 @@
-package document_clustering.linkback.bas0901;
+package document_clustering.linkback.step1;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 /**
+ * join the simhash intermediate output and the mst output
+ *
  * Created by edwardlol on 2016/12/2.
  */
-public class Process0901Driver extends Configured implements Tool {
+public class Step1Driver extends Configured implements Tool {
     //~  Methods ---------------------------------------------------------------
 
     @Override
     public int run(String[] args) throws Exception {
-        if (args.length < 2) {
-            System.err.printf("usage: %s bas_dir output_dir\n"
+        if (args.length < 3) {
+            System.err.printf("usage: %s mst_result_dir simhash_result_file output_dir\n"
                     , getClass().getSimpleName());
             System.exit(1);
         }
@@ -36,16 +40,29 @@ public class Process0901Driver extends Configured implements Tool {
             );
         }
 
-        Job job = Job.getInstance(conf, "process 0901 job");
-        job.setJarByClass(Process0901Driver.class);
+        conf.set("mst", "1");
+        conf.set("simhash_step1", "2");
+
+        Job job = Job.getInstance(conf, "result job");
+        job.setJarByClass(Step1Driver.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileInputFormat.addInputPath(job, new Path(args[1]));
 
-        job.setMapperClass(Process0901Mapper.class);
-        job.setMapOutputKeyClass(Text.class);
+        job.setInputFormatClass(KeyValueTextInputFormat.class);
+
+        job.setMapperClass(Step1Mapper.class);
+        job.setMapOutputKeyClass(Step1KeyWritable.class);
         job.setMapOutputValueClass(Text.class);
 
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        job.setPartitionerClass(Step1Partitioner.class);
+        job.setGroupingComparatorClass(TaggedJoiningGroupingComparator.class);
+
+        job.setReducerClass(Step1Reducer.class);
+        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
+
+        FileOutputFormat.setOutputPath(job, new Path(args[2]));
 
         return job.waitForCompletion(true) ? 0 : 1;
     }
@@ -54,8 +71,8 @@ public class Process0901Driver extends Configured implements Tool {
 
     public static void main(String[] args) throws Exception {
         Configuration configuration = new Configuration();
-        System.exit(ToolRunner.run(configuration, new Process0901Driver(), args));
+        System.exit(ToolRunner.run(configuration, new Step1Driver(), args));
     }
 }
 
-// End Process0901Driver.java
+// End Step1Driver.java

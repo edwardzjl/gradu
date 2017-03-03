@@ -1,9 +1,11 @@
-package document_clustering.linkback;
+package document_clustering.linkback.step1;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Partitioner;
 
 /**
+ * partition the mapper output by the joinKey in {@link Step1KeyWritable}
+ * <p>
  * Created by edwardlol on 2016/12/26.
  */
 public class Step1Partitioner extends Partitioner<Step1KeyWritable, Text> {

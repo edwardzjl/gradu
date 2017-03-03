@@ -1,5 +1,7 @@
-package document_clustering.mst;
+package document_clustering.mst.deprecated;
 
+import document_clustering.mst.MSTChildPartitioner;
+import document_clustering.mst.MSTChildReducer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;

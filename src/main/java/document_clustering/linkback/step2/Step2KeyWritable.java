@@ -1,4 +1,4 @@
-package document_clustering.linkback;
+package document_clustering.linkback.step2;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -20,7 +20,7 @@ public class Step2KeyWritable implements WritableComparable<Step2KeyWritable> {
     private Text joinKey = new Text();
 
     /**
-     * 1 = group_id, 2 = content
+     * 1 = cluster_id, 2 = content
      */
     private IntWritable tag = new IntWritable();
 

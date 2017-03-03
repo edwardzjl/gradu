@@ -67,6 +67,7 @@ public class MSTDriver extends Configured implements Tool {
         JobControl jobControl = new JobControl("mst jobs");
 
         /* step 1, split and calculate the child msts */
+
         Job childJob = Job.getInstance(conf, "mst child job");
         childJob.setJarByClass(MSTDriver.class);
 
@@ -92,7 +93,8 @@ public class MSTDriver extends Configured implements Tool {
         controlledChildJob.setJob(childJob);
         jobControl.addJob(controlledChildJob);
 
-        //
+        /* step 2, merge step 1's output and calculate final mst */
+
         Job finalJob = Job.getInstance(conf, "mst final job");
         finalJob.setJarByClass(MSTFinalReducer.class);
 

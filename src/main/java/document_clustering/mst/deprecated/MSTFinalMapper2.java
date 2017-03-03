@@ -1,4 +1,4 @@
-package document_clustering.mst;
+package document_clustering.mst.deprecated;
 
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;

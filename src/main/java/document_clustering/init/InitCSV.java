@@ -37,6 +37,7 @@ public class InitCSV {
                     .append(_contents[19]).append(',').append(_contents[21]).append('\n');
             bw.flush();
             line = br.readLine();
+            int cnt = 0;
             while (line != null) {
                 String[] contents = line.split(",");
 
@@ -50,9 +51,12 @@ public class InitCSV {
                             .append(contents[13]).append(',').append(contents[14]).append(',')
                             .append(contents[19]).append(',').append(contents[21]).append('\n');
                     bw.flush();
+                } else {
+                    cnt++;
                 }
                 line = br.readLine();
             }
+            System.out.println(cnt);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,7 +164,7 @@ public class InitCSV {
 
     public static void main(String[] args) {
         pre6310();
-        init63102();
+//        init63102();
     }
 }
 

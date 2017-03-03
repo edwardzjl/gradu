@@ -1,4 +1,4 @@
-package document_clustering.linkback.bas8703;
+package document_clustering.linkback.pre;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -6,6 +6,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 
 /**
+ * extract useful information from 8703's end file
+ * <p>
  * Created by edwardlol on 2016/12/2.
  */
 public class Process8703Mapper extends Mapper<Text, Text, Text, Text> {
@@ -29,8 +31,10 @@ public class Process8703Mapper extends Mapper<Text, Text, Text, Text> {
 
         String[] line = value.toString().split("\t");
 
-        outputKey.set(key.toString() + "@@" + line[0]);
-        outputValue.set(line[4]);
+        this.outputKey.set(key.toString() + "@@" + line[0]);
+        this.outputValue.set(line[4]);
+
+        // entry_id@@g_no \t g_name@@g_model
         context.write(outputKey, outputValue);
     }
 }

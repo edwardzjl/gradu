@@ -37,7 +37,7 @@ public class MSTFinalReducer extends Reducer<DoubleWritable, Text, IntWritable, 
             FileReader fileReader = new FileReader("./docCnt");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line = bufferedReader.readLine();
-            unionFind = new UnionFind(Integer.parseInt(line) + 1);
+            this.unionFind = new UnionFind(Integer.parseInt(line) + 1);
 
             bufferedReader.close();
             fileReader.close();
@@ -46,7 +46,7 @@ public class MSTFinalReducer extends Reducer<DoubleWritable, Text, IntWritable, 
 
     /**
      * @param inputKey similarity
-     * @param values   doc_id1,doc_id2
+     * @param values   group_id1,group_id2
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -62,18 +62,18 @@ public class MSTFinalReducer extends Reducer<DoubleWritable, Text, IntWritable, 
                 int src = Integer.valueOf(srcDest[0]);
                 int dest = Integer.valueOf(srcDest[1]);
 
-                unionFind.union(src, dest);
+                this.unionFind.union(src, dest);
             }
         }
     }
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
-        int[] uf = unionFind.getId();
+        int[] uf = this.unionFind.getId();
         for (int i = 0; i < uf.length; i++) {
             this.outputKey.set(i);
-            this.outputValue.set(unionFind.find(i));
-            // doc_id \t group_id
+            this.outputValue.set(this.unionFind.find(i));
+            // group_id \t cluster_id
             context.write(this.outputKey, this.outputValue);
         }
     }

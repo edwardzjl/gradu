@@ -1,9 +1,11 @@
-package document_clustering.linkback;
+package document_clustering.linkback.step1;
 
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 
 /**
+ * {@link Step1KeyWritable}s with the same joinKey will be grouped together in the reducer
+ * <p>
  * Created by edwardlol on 2016/12/26.
  */
 public class TaggedJoiningGroupingComparator extends WritableComparator {

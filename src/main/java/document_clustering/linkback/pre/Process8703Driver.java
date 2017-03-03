@@ -1,4 +1,4 @@
-package document_clustering.linkback.bas8703;
+package document_clustering.linkback.pre;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;

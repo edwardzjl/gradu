@@ -1,4 +1,4 @@
-package document_clustering.mst;
+package document_clustering.mst.deprecated;
 
 import document_clustering.util.CollectionUtil;
 import org.apache.hadoop.conf.Configuration;

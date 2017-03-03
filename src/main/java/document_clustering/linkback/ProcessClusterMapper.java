@@ -27,8 +27,9 @@ public class ProcessClusterMapper extends Mapper<Text, Text, Text, Text> {
 
         String[] line = value.toString().split("::");
 
-        outputKey.set(line[0]);
-        context.write(outputKey, key);
+        this.outputKey.set(line[0]);
+        // entry_id@@g_no \t group_id
+        context.write(this.outputKey, key);
     }
 }
 // End Step1Mapper.java

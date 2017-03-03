@@ -29,6 +29,7 @@ public class MSTFinalMapper extends Mapper<Text, Text, DoubleWritable, Text> {
             throws IOException, InterruptedException {
 
         this.outputKey.set(Double.valueOf(key.toString()));
+        // similarity \t doc_id1,doc_id2
         context.write(this.outputKey, value);
     }
 }

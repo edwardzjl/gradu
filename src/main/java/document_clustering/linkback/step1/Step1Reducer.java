@@ -1,4 +1,4 @@
-package document_clustering.linkback;
+package document_clustering.linkback.step1;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -7,6 +7,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 
 /**
+ * join the simhash intermediate result and the mst result
+ * <p>
  * Created by edwardlol on 2016/12/2.
  */
 public class Step1Reducer extends Reducer<Step1KeyWritable, Text, IntWritable, Text> {
@@ -17,8 +19,8 @@ public class Step1Reducer extends Reducer<Step1KeyWritable, Text, IntWritable, T
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     group_id
-     * @param values  doc_id or contents
+     * @param key     group_id, join_order
+     * @param values  cluster_id or contents
      * @param context
      * @throws IOException
      * @throws InterruptedException
@@ -29,9 +31,13 @@ public class Step1Reducer extends Reducer<Step1KeyWritable, Text, IntWritable, T
 
         for (Text value : values) {
             if (key.getTag().get() == 1) {
-                outputKey.set(Integer.valueOf(value.toString()));
+                /*
+                    mst result, value = cluster_id
+                 */
+                this.outputKey.set(Integer.valueOf(value.toString()));
             } else {
-                context.write(outputKey, value);
+                // cluster_id, entry_id@@g_no::g_name##g_model
+                context.write(this.outputKey, value);
             }
         }
     }
