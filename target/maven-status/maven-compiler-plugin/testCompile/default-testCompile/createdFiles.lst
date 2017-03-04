@@ -12,7 +12,9 @@ partition_test/pDriver.class
 clustering/SimHashTests.class
 partition_test/columnTest.class
 partition_test/pReducer.class
+simhash/SimHashTests.class
 clustering/MstTests.class
+demo/Process0901.class
 word_sep/SepTest.class
 writables/WritableTests.class
 clustering/InvertedIndexTests.class

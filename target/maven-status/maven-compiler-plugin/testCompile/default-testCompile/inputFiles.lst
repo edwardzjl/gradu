@@ -1,3 +1,4 @@
+/Users/edwardlol/workspace/recommend_MR/src/test/java/demo/Process0901.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/writables/WritableMapper.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/partition_test/pReducer.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/demo/Combine8703.java
@@ -6,6 +7,7 @@
 /Users/edwardlol/workspace/recommend_MR/src/test/java/writables/WritableTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/mrTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/InvertedIndexTests.java
+/Users/edwardlol/workspace/recommend_MR/src/test/java/simhash/SimHashTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/clustering/SimHashTests.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/partition_test/columnTest.java
 /Users/edwardlol/workspace/recommend_MR/src/test/java/Utils.java

@@ -30,7 +30,7 @@ public class ISimReducer extends Reducer<IntIntTupleWritable, DoubleWritable, In
         for (DoubleWritable value : values) {
             sim += value.get();
         }
-        if (sim > 0.001d) {
+        if (sim > 0.01d) {
             this.outputValue.set(Math.abs(1.0d - sim));
             // docId1,docId2 \t sim
             context.write(key, this.outputValue);

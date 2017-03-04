@@ -30,8 +30,8 @@ public class InitTests {
     public void init8703Test() {
         Init8703Driver driver = new Init8703Driver();
         String[] args = new String[2];
-        args[0] = "/final/init/in";
-        args[1] = "/final/init/out";
+        args[0] = "/init/in";
+        args[1] = "/init/out";
         try {
             driver.run(args);
         } catch (Exception e) {

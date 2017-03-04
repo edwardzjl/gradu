@@ -49,7 +49,10 @@ public class IntIntTupleWritable extends TupleWritable<IntWritable, IntWritable>
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int hash = 17;
+        hash = hash * 31 + this.left.get();
+        hash = hash * 31 + this.right.get();
+        return hash;
     }
 
     public void set(IntWritable left, IntWritable right) {

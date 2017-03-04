@@ -15,6 +15,7 @@ import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
@@ -36,6 +37,9 @@ public class ISimDriver extends Configured implements Tool {
         if (conf == null) {
             conf = new Configuration();
             conf.set("fs.defaultFS", "hdfs://localhost:9000/user/edwardlol");
+
+            conf.set("mapred.child.java.opts", "-Xmx768m");
+            conf.set("mapreduce.reduce.memory.mb", "1024");
         } else {
             conf.set("fs.hdfs.impl",
                     org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -46,7 +50,7 @@ public class ISimDriver extends Configured implements Tool {
             conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
 
             conf.set("mapred.child.java.opts", "-Xmx768m");
-            conf.set("mapreduce.reduce.memory.mb", "2048");
+//            conf.set("mapreduce.reduce.memory.mb", "2048");
 
             conf.set("mapreduce.reduce.shuffle.input.buffer.percent", "0.2");
 
@@ -68,8 +72,8 @@ public class ISimDriver extends Configured implements Tool {
             job.setOutputFormatClass(SequenceFileOutputFormat.class);
             SequenceFileOutputFormat.setCompressOutput(job, true);
             SequenceFileOutputFormat.setOutputCompressionType(job, SequenceFile.CompressionType.BLOCK);
-            SequenceFileOutputFormat.setOutputCompressorClass(job, com.hadoop.compression.lzo.LzoCodec.class);
-//            SequenceFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.GzipCodec.class);
+//            SequenceFileOutputFormat.setOutputCompressorClass(job, com.hadoop.compression.lzo.LzoCodec.class);
+            SequenceFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.GzipCodec.class);
             SequenceFileOutputFormat.setOutputPath(job, new Path(args[1]));
         } else {
             FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -79,10 +83,11 @@ public class ISimDriver extends Configured implements Tool {
         }
 
         job.setMapperClass(ISimMapper.class);
-        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputKeyClass(IntIntTupleWritable.class);
         job.setMapOutputValueClass(DoubleWritable.class);
 
         job.setCombinerClass(ISimCombiner.class);
+        job.setPartitionerClass(HashPartitioner.class);
 
         job.setNumReduceTasks(Integer.valueOf(args[3]));
 

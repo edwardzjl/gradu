@@ -13,8 +13,8 @@ public class SimHashTests {
     public void simHash() {
         SimHashDriver driver = new SimHashDriver();
         String[] args = new String[2];
-        args[0] = "/final/init/out/0901";
-        args[1] = "/final/simhash/0901";
+        args[0] = "/init/out";
+        args[1] = "/simhash";
         try {
             driver.run(args);
         } catch (Exception e) {

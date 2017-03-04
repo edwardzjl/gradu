@@ -13,8 +13,8 @@ public class SimilarityTests {
     public void preTest() {
         PreDriver driver = new PreDriver();
         String[] args = new String[3];
-        args[0] = "/final/iindex/0901_id/result";
-        args[1] = "/final/pre/0901_v2_2";
+        args[0] = "/iindex/result";
+        args[1] = "/pre";
         args[2] = "0";
         try {
             driver.run(args);
@@ -26,10 +26,11 @@ public class SimilarityTests {
     @Test
     public void isimTest() {
         ISimDriver driver = new ISimDriver();
-        String[] args = new String[3];
-        args[0] = "/final/bench/pre";
-        args[1] = "/final/bench/isim";
+        String[] args = new String[4];
+        args[0] = "/pre";
+        args[1] = "/isim";
         args[2] = "0";
+        args[3] = "7";
         try {
             driver.run(args);
         } catch (Exception e) {

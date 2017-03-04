@@ -24,7 +24,7 @@ public class PreDriver extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         if (args.length < 2) {
             System.err.printf("usage: %s inverted_index_result_dir output_dir" +
-                            " [compress] [split number]\n"
+                            " [compress] [deci number]\n"
                     , getClass().getSimpleName());
             System.exit(1);
         }
@@ -42,17 +42,24 @@ public class PreDriver extends Configured implements Tool {
             conf.set("yarn.app.mapreduce.am.resource.mb", "1024");
             conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx768m");
 
-            conf.set("mapred.child.java.opts", "-Xmx1536m");
+//            conf.set("mapred.child.java.opts", "-Xmx1536m");
+            conf.set("mapred.child.java.opts", "-Xmx768m");
             // The amount of memory to request from the scheduler for each map task.
-            conf.set("mapreduce.map.memory.mb", "2048");
-            conf.set("mapreduce.reduce.memory.mb", "2048");
+//            conf.set("mapreduce.map.memory.mb", "2048");
+//            conf.set("mapreduce.reduce.memory.mb", "2048");
 
             conf.set("mapreduce.reduce.speculative", "false");
         }
 
-        conf.setInt("reducer.num", 15);
+        conf.setInt("reducer.num", 29);
 
-        conf.setInt("split.num", 6);
+        conf.setInt("split.num", 8);
+
+        if (args.length > 3) {
+            conf.setInt("deci.number", Integer.valueOf(args[3]));
+        } else {
+            conf.setInt("deci.number", 3);
+        }
 
         Job job = Job.getInstance(conf, "pre job");
         job.setJarByClass(PreDriver.class);
@@ -75,7 +82,8 @@ public class PreDriver extends Configured implements Tool {
             job.setOutputFormatClass(SequenceFileOutputFormat.class);
             SequenceFileOutputFormat.setCompressOutput(job, true);
             SequenceFileOutputFormat.setOutputCompressionType(job, SequenceFile.CompressionType.BLOCK);
-            SequenceFileOutputFormat.setOutputCompressorClass(job, com.hadoop.compression.lzo.LzoCodec.class);
+//            SequenceFileOutputFormat.setOutputCompressorClass(job, com.hadoop.compression.lzo.LzoCodec.class);
+            SequenceFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.GzipCodec.class);
             SequenceFileOutputFormat.setOutputPath(job, new Path(args[1]));
         } else {
             FileOutputFormat.setOutputPath(job, new Path(args[1]));
