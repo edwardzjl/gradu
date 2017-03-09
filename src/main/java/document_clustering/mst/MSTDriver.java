@@ -9,6 +9,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileAsTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;
 import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -56,13 +58,14 @@ public class MSTDriver extends Configured implements Tool {
         if (args.length > 3) {
             conf.setInt("reduce.task.num", Integer.valueOf(args[3]));
         } else {
-            conf.setInt("reduce.task.num", 3);
+            conf.setInt("reduce.task.num", 5);
         }
         if (args.length > 4) {
             conf.setDouble("final.threshold", Double.valueOf(args[4]));
         } else {
             conf.setDouble("final.threshold", 0.2d);
         }
+
 
         JobControl jobControl = new JobControl("mst jobs");
 
@@ -73,10 +76,15 @@ public class MSTDriver extends Configured implements Tool {
 
         childJob.addCacheFile(docCntFile);
 
-        FileInputFormat.addInputPath(childJob, new Path(args[0]));
-        FileOutputFormat.setOutputPath(childJob, step1_OutputDir);
+        if (args.length > 5 && args[5].equals("1")) {
+            SequenceFileInputFormat.addInputPath(childJob, new Path(args[0]));
+            childJob.setInputFormatClass(SequenceFileAsTextInputFormat.class);
+        } else {
+            FileInputFormat.addInputPath(childJob, new Path(args[0]));
+            childJob.setInputFormatClass(KeyValueTextInputFormat.class);
+        }
 
-        childJob.setInputFormatClass(KeyValueTextInputFormat.class);
+        FileOutputFormat.setOutputPath(childJob, step1_OutputDir);
 
         childJob.setMapperClass(MSTChildMapper.class);
         childJob.setMapOutputKeyClass(DoubleWritable.class);

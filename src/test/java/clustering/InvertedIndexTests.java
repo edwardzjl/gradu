@@ -18,8 +18,8 @@ public class InvertedIndexTests {
     public void invertedIndexTest() {
         InvertedIndexDriver driver = new InvertedIndexDriver();
         String[] args = new String[2];
-        args[0] = "/tf_idf/result";
-        args[1] = "/iindex";
+        args[0] = "/0901/tf_idf/result";
+        args[1] = "/0901/iindex";
         try {
             driver.run(args);
         } catch (Exception e) {

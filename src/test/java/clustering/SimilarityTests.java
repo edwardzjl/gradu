@@ -13,8 +13,8 @@ public class SimilarityTests {
     public void preTest() {
         PreDriver driver = new PreDriver();
         String[] args = new String[3];
-        args[0] = "/iindex/result";
-        args[1] = "/pre";
+        args[0] = "/0901/iindex/result";
+        args[1] = "/0901/pre";
         args[2] = "0";
         try {
             driver.run(args);

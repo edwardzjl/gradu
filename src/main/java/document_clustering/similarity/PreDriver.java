@@ -24,7 +24,7 @@ public class PreDriver extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         if (args.length < 2) {
             System.err.printf("usage: %s inverted_index_result_dir output_dir" +
-                            " [compress] [deci number]\n"
+                            " [compress] [reducer number] [deci number]\n"
                     , getClass().getSimpleName());
             System.exit(1);
         }
@@ -51,12 +51,15 @@ public class PreDriver extends Configured implements Tool {
             conf.set("mapreduce.reduce.speculative", "false");
         }
 
-        conf.setInt("reducer.num", 29);
-
         conf.setInt("split.num", 8);
 
         if (args.length > 3) {
-            conf.setInt("deci.number", Integer.valueOf(args[3]));
+            conf.setInt("reducer.num", Integer.valueOf(args[3]));
+        } else {
+            conf.setInt("reducer.num", 29);
+        }
+        if (args.length > 4) {
+            conf.setInt("deci.number", Integer.valueOf(args[4]));
         } else {
             conf.setInt("deci.number", 3);
         }

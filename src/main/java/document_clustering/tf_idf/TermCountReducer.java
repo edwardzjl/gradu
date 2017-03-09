@@ -17,7 +17,7 @@ public class TermCountReducer extends Reducer<Text, IntWritable, Text, IntWritab
     //~ Methods ----------------------------------------------------------------
 
     /**
-     * @param key     term@@@entry_id@@g_no@@group_id::content
+     * @param key     term@@@entry_id@@g_no@@group_id::position
      * @param values  count
      * @param context
      * @throws IOException

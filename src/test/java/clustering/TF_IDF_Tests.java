@@ -19,8 +19,8 @@ public class TF_IDF_Tests {
     public void tf_idf() {
         TF_IDF_Driver driver = new TF_IDF_Driver();
         String[] args = new String[2];
-        args[0] = "/simhash/result";
-        args[1] = "/tf_idf";
+        args[0] = "/0901/simhash";
+        args[1] = "/0901/tf_idf";
         try {
             driver.run(args);
         } catch (Exception e) {
