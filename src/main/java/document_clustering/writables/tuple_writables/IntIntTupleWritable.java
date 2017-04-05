@@ -1,5 +1,6 @@
 package document_clustering.writables.tuple_writables;
 
+import com.google.common.collect.ComparisonChain;
 import org.apache.hadoop.io.IntWritable;
 
 /**
@@ -40,11 +41,16 @@ public class IntIntTupleWritable extends TupleWritable<IntWritable, IntWritable>
     public int compareTo(TupleWritable that) {
         IntIntTupleWritable guest = (IntIntTupleWritable) that;
 
-        int result = this.left.compareTo(guest.left);
-        if (result == 0) {
-            return this.right.compareTo(guest.right);
-        }
-        return result;
+        return ComparisonChain.start()
+                .compare(this.left, guest.left)
+                .compare(this.right, guest.right)
+                .result();
+
+//        int result = this.left.compareTo(guest.left);
+//        if (result == 0) {
+//            return this.right.compareTo(guest.right);
+//        }
+//        return result;
     }
 
     @Override

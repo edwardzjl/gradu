@@ -1,5 +1,6 @@
 package writables;
 
+import document_clustering.writables.tuple_writables.IntIntTupleWritable;
 import org.junit.Test;
 
 /**
@@ -25,6 +26,20 @@ public class WritableTests {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void intIntTupleTest() {
+        IntIntTupleWritable a = new IntIntTupleWritable(1, 2);
+        IntIntTupleWritable b = new IntIntTupleWritable(1, 2);
+
+        System.out.println(a.compareTo(b));
+
+        IntIntTupleWritable c = new IntIntTupleWritable(2, 3);
+        IntIntTupleWritable d = new IntIntTupleWritable(1, 2);
+
+        System.out.println(c.compareTo(d));
+
     }
 }
 

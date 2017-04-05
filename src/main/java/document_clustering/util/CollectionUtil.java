@@ -1,6 +1,8 @@
 package document_clustering.util;
 
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multiset;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,15 +31,12 @@ public class CollectionUtil {
      * @param <T>        the type of objects in the list
      * @return a map contains all object and their counts
      */
-    public static <T> Map<T, Integer> countList(List<T> objectList) {
-        Map<T, Integer> resultMap = Maps.newHashMap();
+    public static <T> Multiset<T> countList(List<T> objectList) {
+        Multiset<T> result = HashMultiset.create();
         if (objectList != null) {
-            objectList.forEach(object -> {
-                int count = resultMap.containsKey(object) ? resultMap.get(object) + 1 : 1;
-                resultMap.put(object, count);
-            });
+            objectList.forEach(result::add);
         }
-        return resultMap;
+        return result;
     }
 
     /**
