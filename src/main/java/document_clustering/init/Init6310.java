@@ -1,5 +1,7 @@
 package document_clustering.init;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import document_clustering.util.CollectionUtil;
 import document_clustering.util.JiebaFactory;
@@ -20,7 +22,8 @@ public class Init6310 {
 
     //~ Methods ----------------------------------------------------------------
     public static void pre6310() {
-        Map<String, Integer> entry_ids = new HashMap<>();
+//        Map<String, Integer> entry_ids = new HashMap<>();
+        Multiset<String> entry_ids = HashMultiset.create();
 
         try (FileReader fr = new FileReader("./datasets/6310.csv");
              BufferedReader br = new BufferedReader(fr);
@@ -39,8 +42,10 @@ public class Init6310 {
 
                 if (contents.length == 24) {
                     String entry_id = contents[0];
-                    CollectionUtil.updateCountMap(entry_ids, entry_id, 1);
-                    int g_no = entry_ids.get(entry_id);
+//                    CollectionUtil.updateCountMap(entry_ids, entry_id, 1);
+//                    int g_no = entry_ids.get(entry_id);
+                    entry_ids.add(entry_id);
+                    int g_no = entry_ids.count(entry_id);
 
                     bw.append(entry_id).append("@@").append(String.valueOf(g_no)).append(',')
                             .append(contents[12]).append(',')
@@ -60,7 +65,8 @@ public class Init6310 {
 
     public static void init6310() {
         jieba = JiebaFactory.getInstance("./dicts");
-        Map<String, Integer> entry_ids = new HashMap<>();
+//        Map<String, Integer> entry_ids = new HashMap<>();
+        Multiset<String> entry_ids = HashMultiset.create();
 
         try (FileReader fr = new FileReader("./datasets/6310.csv");
              BufferedReader br = new BufferedReader(fr);
@@ -73,8 +79,10 @@ public class Init6310 {
 
                 if (contents.length == 24) {
                     String entry_id = contents[0];
-                    CollectionUtil.updateCountMap(entry_ids, entry_id, 1);
-                    int g_no = entry_ids.get(entry_id);
+//                    CollectionUtil.updateCountMap(entry_ids, entry_id, 1);
+//                    int g_no = entry_ids.get(entry_id);
+                    entry_ids.add(entry_id);
+                    int g_no = entry_ids.count(entry_id);
 
                     String g_name = contents[13];
                     String g_model = contents[14];

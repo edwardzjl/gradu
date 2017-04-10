@@ -49,15 +49,15 @@ public class CollectionUtil {
      * @param object   object
      * @param <T>      the type of the key of the map
      * @return the updated countMap
-     */
-    public static <T> Map<T, Integer> updateCountMap(Map<T, Integer> countMap, T object, Integer cnt) {
-        if (countMap == null) {
-            countMap = Maps.newHashMap();
-        }
-        int count = countMap.containsKey(object) ? countMap.get(object) + cnt : cnt;
-        countMap.put(object, count);
-        return countMap;
-    }
+//     */
+//    public static <T> Map<T, Integer> updateCountMap(Map<T, Integer> countMap, T object, Integer cnt) {
+//        if (countMap == null) {
+//            countMap = Maps.newHashMap();
+//        }
+//        int count = countMap.containsKey(object) ? countMap.get(object) + cnt : cnt;
+//        countMap.put(object, count);
+//        return countMap;
+//    }
 
     public static <T> Map<T, Long> updateCountMap(Map<T, Long> countMap, T object, Long cnt) {
         if (countMap == null) {
