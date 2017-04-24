@@ -1,15 +1,15 @@
 package writables;
 
-import document_clustering.similarity.ISimMapper;
-import document_clustering.similarity.ISimReducer;
+import org.apache.avro.Schema.Type;
+import org.apache.avro.Schema;
+import org.apache.avro.mapred.Pair;
+import org.apache.avro.mapreduce.AvroJob;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
@@ -42,6 +42,9 @@ public class WritableDriver extends Configured implements Tool {
 
         Job job = Job.getInstance(conf, "isim job");
         job.setJarByClass(WritableDriver.class);
+
+        //
+        AvroJob.setOutputValueSchema(job, Pair.getPairSchema(Schema.create(Type.INT), Schema.create(Type.STRING)));
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         job.setInputFormatClass(TextInputFormat.class);

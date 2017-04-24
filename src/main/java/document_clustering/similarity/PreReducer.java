@@ -37,11 +37,9 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
     }
 
     /**
-     * @param key     container_id, flag
-     * @param values  term_id:docId=TF-IDF,docId=TF-IDF...
-     * @param context
-     * @throws IOException
-     * @throws InterruptedException
+     * @param key    container_id, flag
+     * @param values term_id:docId=TF-IDF,docId=TF-IDF...
+     *               {@inheritDoc}
      */
     @Override
     public void reduce(IntIntTupleWritable key, Iterable<Text> values,
@@ -49,27 +47,23 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
 
         if (key.getRightValue() == 0) {
             /* flag == 0, do self join */
-            selfJoin(key, values, context);
+            selfJoin(values, context);
         } else {
             /* flag == 1, do cross join */
-            crossJoin(key, values, context);
+            crossJoin(values, context);
         }
     }
 
     /**
-     * @param key     container_id, flag
-     * @param values  docId=TF-IDF,docId=TF-IDF...
-     * @param context
+     * @param values docId=TF-IDF,docId=TF-IDF...
      */
-    private void selfJoin(IntIntTupleWritable key, Iterable<Text> values, Context context)
+    private void selfJoin(Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
-        try {
-            for (Text value : values) {
-                String[] contents = value.toString().split(",");
-                // this term only appears in one doc, skip calculation
-                if (contents.length < 2) {
-                    continue;
-                }
+
+        for (Text value : values) {
+            String[] contents = value.toString().split(",");
+            // this term only appears in one doc, skip calculation
+            if (contents.length > 1) {
                 for (int i = 0; i < contents.length; i++) {
                     for (int j = i + 1; j < contents.length; j++) {
                         String[] idAndWeighti = contents[i].split("=");
@@ -79,40 +73,29 @@ public class PreReducer extends Reducer<IntIntTupleWritable, Text, Text, Text> {
                     }
                 }
             }
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            System.out.println("key: " + key.toString());
-            System.out.println("right: " + key.getRightValue());
         }
     }
 
     /**
-     * @param key     container_id, flag
-     * @param values  docId=TF-IDF,docId=TF-IDF...
-     * @param context
+     * @param values docId=TF-IDF,docId=TF-IDF...
      */
-    private void crossJoin(IntIntTupleWritable key, Iterable<Text> values, Context context)
+    private void crossJoin(Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
-        try {
-            for (Text value : values) {
-                // termId, docId=TF-IDF,docId=TF-IDF...
-                String[] sets = value.toString().split("#");
-                String[] set1 = sets[0].split(",");
-                String[] set2 = sets[1].split(",");
 
-                for (String aPart1 : set1) {
-                    for (String aPart2 : set2) {
-                        String[] idAndWeight1 = aPart1.split("=");
-                        String[] idAndWeight2 = aPart2.split("=");
+        for (Text value : values) {
+            // termId, docId=TF-IDF,docId=TF-IDF...
+            String[] sets = value.toString().split("#");
+            String[] set1 = sets[0].split(",");
+            String[] set2 = sets[1].split(",");
 
-                        output(idAndWeight1[0], idAndWeight2[0], idAndWeight1[1], idAndWeight2[1], context);
-                    }
+            for (String aPart1 : set1) {
+                for (String aPart2 : set2) {
+                    String[] idAndWeight1 = aPart1.split("=");
+                    String[] idAndWeight2 = aPart2.split("=");
+
+                    output(idAndWeight1[0], idAndWeight2[0], idAndWeight1[1], idAndWeight2[1], context);
                 }
             }
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            System.out.println("key: " + key.toString());
-            System.out.println("right: " + key.getRightValue());
         }
     }
 

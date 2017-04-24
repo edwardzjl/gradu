@@ -14,7 +14,7 @@ import org.apache.hadoop.util.ToolRunner;
  * Created by edwardlol on 2016/12/3.
  */
 public class Init0901Driver extends Configured implements Tool {
-    //~  Methods ---------------------------------------------------------------
+    //~ Methods ---------------------------------------------------------------
 
     @Override
     public int run(String[] args) throws Exception {
@@ -62,7 +62,7 @@ public class Init0901Driver extends Configured implements Tool {
         return complete ? 0 : 1;
     }
 
-    //~  Entrance --------------------------------------------------------------
+    //~ Entrance --------------------------------------------------------------
 
     public static void main(String[] args) throws Exception {
         Configuration configuration = new Configuration();
