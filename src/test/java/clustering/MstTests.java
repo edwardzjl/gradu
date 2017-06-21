@@ -7,12 +7,6 @@ import org.junit.Test;
  * Created by edwardlol on 2017/2/27.
  */
 public class MstTests {
-    //~ Static fields/initializers ---------------------------------------------
-
-    //~ Instance fields --------------------------------------------------------
-
-    //~ Constructors -----------------------------------------------------------
-
     //~ Methods ----------------------------------------------------------------
 
     // my mst
